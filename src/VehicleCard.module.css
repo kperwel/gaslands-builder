@@ -1,3 +1,8 @@
+.propertyTag {
+  display: inline-block;
+  margin: .1em;
+}
+
 .specialRule {
   font-style: italic;
 }
