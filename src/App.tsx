@@ -1,8 +1,9 @@
 import React from "react";
 import styles from "./App.module.css";
-import { ActiveVehicle, vehicleTypes } from "./library/vehicles";
+import { ActiveVehicle, vehicleTypes } from "./rules/vehicles";
 import VehicleCard from "./VehicleCard";
 import { Button, Menu, Navbar, Popover, Position } from "@blueprintjs/core";
+import { defaultWeaponTypes } from "./rules/weapons";
 
 interface AddVehicleAction {
   type: "addVehicle";
@@ -14,7 +15,16 @@ interface RemoveVehicleAction {
   index: number;
 }
 
-type VehicleAction = AddVehicleAction | RemoveVehicleAction;
+interface UpdateVehicleAction {
+  type: "updateVehicle";
+  index: number;
+  vehicle: ActiveVehicle;
+}
+
+type VehicleAction =
+  | AddVehicleAction
+  | RemoveVehicleAction
+  | UpdateVehicleAction;
 
 const App: React.FC = (): React.ReactElement => {
   const reducer = (state: ActiveVehicle[], action: VehicleAction) => {
@@ -26,6 +36,10 @@ const App: React.FC = (): React.ReactElement => {
           ...state.slice(0, action.index),
           ...state.slice(action.index + 1)
         ];
+      case "updateVehicle":
+        return state.map((vehicle, index) =>
+          index === action.index ? action.vehicle : vehicle
+        );
       default:
         throw new Error(`unknown vhicle reducer action: ${action}`);
     }
@@ -38,6 +52,10 @@ const App: React.FC = (): React.ReactElement => {
   };
 
   const removeVehicle = (index: number): void => {
+    dispatchVehicleAction({ type: "removeVehicle", index });
+  };
+
+  const updateVehicle = (index: number, vehicle: ActiveVehicle): void => {
     dispatchVehicleAction({ type: "removeVehicle", index });
   };
 
@@ -58,7 +76,8 @@ const App: React.FC = (): React.ReactElement => {
                     text={type.name}
                     onClick={() =>
                       addVehicle({
-                        type
+                        type,
+                        weapons: defaultWeaponTypes
                       })
                     }
                   ></Menu.Item>
@@ -76,6 +95,9 @@ const App: React.FC = (): React.ReactElement => {
             <div className={styles.vehiclesItem}>
               <VehicleCard
                 vehicle={vehicle}
+                onUpdate={vehicle => {
+                  updateVehicle(index, vehicle);
+                }}
                 onDuplicate={() => {
                   addVehicle(vehicle);
                 }}

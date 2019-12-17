@@ -1,3 +1,5 @@
+import { WeaponType } from "./weapons";
+
 export type VehicleWeight = "Lightweight" | "Middleweight" | "Heavyweight";
 
 export interface VehicleType {
@@ -79,4 +81,5 @@ export const vehicleTypes: VehicleType[] = [
 
 export interface ActiveVehicle {
   type: VehicleType;
+  weapons: WeaponType[];
 }
