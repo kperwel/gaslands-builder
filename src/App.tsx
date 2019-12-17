@@ -24,7 +24,7 @@ const App: React.FC = (): React.ReactElement => {
       case "addVehicle":
         return [...state, action.vehicle];
       case "removeVehicle":
-        return state.filter((vehicle) => vehicle !== action.vehicle);
+        return state.filter(vehicle => vehicle !== action.vehicle);
       default:
         throw new Error(`unknown vhicle reducer action: ${action}`);
     }
@@ -48,7 +48,12 @@ const App: React.FC = (): React.ReactElement => {
       <main className={styles.main}>
         <div className={styles.controls}>
           <button
-            onClick={() => addVehicle({ type: vehicleTypes[Math.floor(Math.random()*vehicleTypes.length)] })}
+            onClick={() =>
+              addVehicle({
+                type:
+                  vehicleTypes[Math.floor(Math.random() * vehicleTypes.length)]
+              })
+            }
           >
             Add vehicle
           </button>
