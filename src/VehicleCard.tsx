@@ -55,8 +55,12 @@ const VehicleCard: React.FC<VehicleCardProps> = ({
         </tbody>
       </HTMLTable>
       <ButtonGroup>
-        <Button icon="duplicate" onClick={onDuplicate}>Duplicate</Button>
-        <Button icon="remove" onClick={onRemove}>Remove</Button>
+        <Button icon="remove" onClick={onRemove}>
+          Remove
+        </Button>
+        <Button icon="duplicate" onClick={onDuplicate}>
+          Duplicate
+        </Button>
       </ButtonGroup>
     </Card>
   );

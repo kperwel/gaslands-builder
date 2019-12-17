@@ -1,8 +1,8 @@
 import React from "react";
 import styles from "./App.module.css";
-import { vehicleTypes, ActiveVehicle } from "./library/vehicles";
+import { ActiveVehicle, vehicleTypes } from "./library/vehicles";
 import VehicleCard from "./VehicleCard";
-import { Button, Navbar } from "@blueprintjs/core";
+import { Button, Menu, Navbar, Popover, Position } from "@blueprintjs/core";
 
 interface AddVehicleAction {
   type: "addVehicle";
@@ -45,22 +45,31 @@ const App: React.FC = (): React.ReactElement => {
     <div className={styles.wrapper}>
       <Navbar>
         <Navbar.Group>
-
           <Navbar.Heading>Gaslands Builder</Navbar.Heading>
         </Navbar.Group>
       </Navbar>
       <main className={styles.main}>
         <div className={styles.controls}>
-          <Button
-            onClick={() =>
-              addVehicle({
-                type:
-                  vehicleTypes[Math.floor(Math.random() * vehicleTypes.length)]
-              })
+          <Popover
+            content={
+              <Menu>
+                {vehicleTypes.map(type => (
+                  <Menu.Item
+                    text={type.name}
+                    onClick={() =>
+                      addVehicle({
+                        type
+                      })
+                    }
+                  ></Menu.Item>
+                ))}
+              </Menu>
             }
+            position={Position.BOTTOM}
+            minimal
           >
-            Add vehicle
-          </Button>
+            <Button>Add vehicle</Button>
+          </Popover>
         </div>
         <div className={styles.vehiclesContainer}>
           {vehicles.map((vehicle, index) => (
