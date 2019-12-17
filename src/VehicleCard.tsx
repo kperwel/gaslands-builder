@@ -1,4 +1,5 @@
 import React from "react";
+import { Button, ButtonGroup, Card, HTMLTable } from "@blueprintjs/core";
 import { ActiveVehicle } from "./library/vehicles";
 import styles from "./VehicleCard.module.css";
 
@@ -14,28 +15,50 @@ const VehicleCard: React.FC<VehicleCardProps> = ({
   onRemove
 }): React.ReactElement => {
   return (
-    <div className={styles.wrapper}>
-      <h3>{vehicle.type.name}</h3>
-      <dl>
-        <dt>Weight</dt>
-        <dd>{vehicle.type.weight}</dd>
-        <dt>Hull</dt>
-        <dd>{vehicle.type.hull}</dd>
-        <dt>Handling</dt>
-        <dd>{vehicle.type.handling}</dd>
-        <dt>Max. Gear</dt>
-        <dd>{vehicle.type.maxGear}</dd>
-        <dt>Crew</dt>
-        <dd>{vehicle.type.crew}</dd>
-        <dt>Build Slots</dt>
-        <dd>{vehicle.type.buildSlots}</dd>
-        <dt>Cost</dt>
-        <dd>{vehicle.type.cost}</dd>
-      </dl>
-      {vehicle.type.specialRule && <p>{vehicle.type.specialRule}</p>}
-      <button onClick={onDuplicate}>Duplicate</button>
-      <button onClick={onRemove}>Remove</button>
-    </div>
+    <Card>
+      <h2>{vehicle.type.name}</h2>
+      <HTMLTable interactive>
+        <tbody>
+          <tr>
+            <td>Weight</td>
+            <td>{vehicle.type.weight}</td>
+          </tr>
+          <tr>
+            <td>Hull</td>
+            <td>{vehicle.type.hull}</td>
+          </tr>
+          <tr>
+            <td>Handling</td>
+            <td>{vehicle.type.handling}</td>
+          </tr>
+          <tr>
+            <td>Max. Gear</td>
+            <td>{vehicle.type.maxGear}</td>
+          </tr>
+          <tr>
+            <td>Crew</td>
+            <td>{vehicle.type.crew}</td>
+          </tr>
+          <tr>
+            <td>Build Slots</td>
+            <td>{vehicle.type.buildSlots}</td>
+          </tr>
+          <tr>
+            <td>Cost</td>
+            <td>{vehicle.type.cost}</td>
+          </tr>
+          {vehicle.type.specialRule && (
+            <tr className={styles.specialRule}>
+              <td colSpan={2}>{vehicle.type.specialRule}</td>
+            </tr>
+          )}
+        </tbody>
+      </HTMLTable>
+      <ButtonGroup>
+        <Button icon="duplicate" onClick={onDuplicate}>Duplicate</Button>
+        <Button icon="remove" onClick={onRemove}>Remove</Button>
+      </ButtonGroup>
+    </Card>
   );
 };
 

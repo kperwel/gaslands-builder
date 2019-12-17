@@ -2,6 +2,7 @@ import React from "react";
 import styles from "./App.module.css";
 import { vehicleTypes, ActiveVehicle } from "./library/vehicles";
 import VehicleCard from "./VehicleCard";
+import { Button, Navbar } from "@blueprintjs/core";
 
 interface AddVehicleAction {
   type: "addVehicle";
@@ -42,12 +43,15 @@ const App: React.FC = (): React.ReactElement => {
 
   return (
     <div className={styles.wrapper}>
-      <header className={styles.header}>
-        <h1>Gaslands Builder</h1>
-      </header>
+      <Navbar>
+        <Navbar.Group>
+
+          <Navbar.Heading>Gaslands Builder</Navbar.Heading>
+        </Navbar.Group>
+      </Navbar>
       <main className={styles.main}>
         <div className={styles.controls}>
-          <button
+          <Button
             onClick={() =>
               addVehicle({
                 type:
@@ -56,20 +60,22 @@ const App: React.FC = (): React.ReactElement => {
             }
           >
             Add vehicle
-          </button>
+          </Button>
         </div>
         <div className={styles.vehiclesContainer}>
           {vehicles.map((vehicle, index) => (
-            <VehicleCard
-              vehicle={vehicle}
-              onDuplicate={() => {
-                addVehicle(vehicle);
-              }}
-              onRemove={() => {
-                removeVehicle(index);
-              }}
-              key={`${vehicle.type}-${index}`}
-            />
+            <div className={styles.vehiclesItem}>
+              <VehicleCard
+                vehicle={vehicle}
+                onDuplicate={() => {
+                  addVehicle(vehicle);
+                }}
+                onRemove={() => {
+                  removeVehicle(index);
+                }}
+                key={`${vehicle.type}-${index}`}
+              />
+            </div>
           ))}
         </div>
       </main>
