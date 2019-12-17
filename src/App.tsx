@@ -1,31 +1,30 @@
-import React from 'react';
-import styles from './App.module.css';
-import nanoId from 'nanoid';
+import React from "react";
+import styles from "./App.module.css";
+import { VehicleType, vehicleTypes } from "./library/vehicles";
 
 interface ActiveVehicle {
-  id: string
+  type: VehicleType;
 }
 
 interface AddVehicleAction {
-  type: 'addVehicle'
-  vehicle: ActiveVehicle
+  type: "addVehicle";
+  vehicle: ActiveVehicle;
 }
 
 interface RemoveVehicleAction {
-  type: 'removeVehicle'
-  vehicleId: string
+  type: "removeVehicle";
+  vehicle: ActiveVehicle;
 }
 
 type VehicleAction = AddVehicleAction | RemoveVehicleAction;
 
 const App: React.FC = (): React.ReactElement => {
-
   const reducer = (state: ActiveVehicle[], action: VehicleAction) => {
     switch (action.type) {
-      case 'addVehicle':
+      case "addVehicle":
         return [...state, action.vehicle];
-      case 'removeVehicle':
-        return state.filter(({id}) => id !== action.vehicleId);
+      case "removeVehicle":
+        return state.filter((vehicle) => vehicle !== action.vehicle);
       default:
         throw new Error(`unknown vhicle reducer action: ${action}`);
     }
@@ -34,11 +33,11 @@ const App: React.FC = (): React.ReactElement => {
   const [vehicles, dispatchVehicleAction] = React.useReducer(reducer, []);
 
   const addVehicle = (vehicle: ActiveVehicle) => {
-    dispatchVehicleAction({type: 'addVehicle', vehicle});
+    dispatchVehicleAction({ type: "addVehicle", vehicle });
   };
 
-  const removeVehicle = (vehicleId: string) => {
-    dispatchVehicleAction({type: 'removeVehicle', vehicleId: vehicleId});
+  const removeVehicle = (vehicle: ActiveVehicle) => {
+    dispatchVehicleAction({ type: "removeVehicle", vehicle });
   };
 
   return (
@@ -48,14 +47,34 @@ const App: React.FC = (): React.ReactElement => {
       </header>
       <main className={styles.main}>
         <div className={styles.controls}>
-          <button onClick={() => addVehicle({id: nanoId()})}>Add vehicle
+          <button
+            onClick={() => addVehicle({ type: vehicleTypes[Math.floor(Math.random()*vehicleTypes.length)] })}
+          >
+            Add vehicle
           </button>
         </div>
         <div className={styles.vehiclesContainer}>
           {vehicles.map(vehicle => (
             <div className={styles.vehicle}>
-              Vehicle {vehicle.id}
-              <button onClick={() => removeVehicle(vehicle.id)}>Remove</button>
+              <h3>{vehicle.type.name}</h3>
+              <dl>
+                <dt>Weight</dt>
+                <dd>{vehicle.type.weight}</dd>
+                <dt>Hull</dt>
+                <dd>{vehicle.type.hull}</dd>
+                <dt>Handling</dt>
+                <dd>{vehicle.type.handling}</dd>
+                <dt>Max. Gear</dt>
+                <dd>{vehicle.type.maxGear}</dd>
+                <dt>Crew</dt>
+                <dd>{vehicle.type.crew}</dd>
+                <dt>Build Slots</dt>
+                <dd>{vehicle.type.buildSlots}</dd>
+                <dt>Cost</dt>
+                <dd>{vehicle.type.cost}</dd>
+              </dl>
+              {vehicle.type.specialRule && <p>{vehicle.type.specialRule}</p>}
+              <button onClick={() => removeVehicle(vehicle)}>Remove</button>
             </div>
           ))}
         </div>

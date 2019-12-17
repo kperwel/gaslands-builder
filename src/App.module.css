@@ -1,5 +1,4 @@
 .wrapper {
-
 }
 
 .header {
@@ -23,9 +22,9 @@
 }
 
 .vehicle {
-  margin: .4em;
-  padding: .4em;
-  border: 1px dashed #333;
+  margin: 0.4em;
+  padding: 0.4em;
+  border: 4px double #999;
 }
 
 .vehicle button {
