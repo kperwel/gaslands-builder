@@ -20,14 +20,3 @@
   display: grid;
   grid-template-columns: repeat(2, 50%);
 }
-
-.vehicle {
-  margin: 0.4em;
-  padding: 0.4em;
-  border: 4px double #999;
-}
-
-.vehicle button {
-  display: block;
-  width: 100%;
-}

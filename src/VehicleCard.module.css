@@ -1,0 +1,10 @@
+.wrapper {
+  margin: 0.4em;
+  padding: 0.4em;
+  border: 4px double #999;
+}
+
+.wrapper button {
+  display: block;
+  width: 100%;
+}

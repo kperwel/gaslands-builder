@@ -76,3 +76,7 @@ export const vehicleTypes: VehicleType[] = [
     cost: 30
   }
 ];
+
+export interface ActiveVehicle {
+  type: VehicleType;
+}
