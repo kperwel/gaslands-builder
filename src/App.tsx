@@ -10,7 +10,7 @@ interface AddVehicleAction {
 
 interface RemoveVehicleAction {
   type: "removeVehicle";
-  vehicle: ActiveVehicle;
+  index: number;
 }
 
 type VehicleAction = AddVehicleAction | RemoveVehicleAction;
@@ -21,7 +21,10 @@ const App: React.FC = (): React.ReactElement => {
       case "addVehicle":
         return [...state, action.vehicle];
       case "removeVehicle":
-        return state.filter(vehicle => vehicle !== action.vehicle);
+        return [
+          ...state.slice(0, action.index),
+          ...state.slice(action.index + 1)
+        ];
       default:
         throw new Error(`unknown vhicle reducer action: ${action}`);
     }
@@ -29,12 +32,12 @@ const App: React.FC = (): React.ReactElement => {
 
   const [vehicles, dispatchVehicleAction] = React.useReducer(reducer, []);
 
-  const addVehicle = (vehicle: ActiveVehicle) => {
+  const addVehicle = (vehicle: ActiveVehicle): void => {
     dispatchVehicleAction({ type: "addVehicle", vehicle });
   };
 
-  const removeVehicle = (vehicle: ActiveVehicle) => {
-    dispatchVehicleAction({ type: "removeVehicle", vehicle });
+  const removeVehicle = (index: number): void => {
+    dispatchVehicleAction({ type: "removeVehicle", index });
   };
 
   return (
@@ -56,7 +59,18 @@ const App: React.FC = (): React.ReactElement => {
           </button>
         </div>
         <div className={styles.vehiclesContainer}>
-          {vehicles.map(vehicle => VehicleCard({ vehicle, removeVehicle }))}
+          {vehicles.map((vehicle, index) => (
+            <VehicleCard
+              vehicle={vehicle}
+              onDuplicate={() => {
+                addVehicle(vehicle);
+              }}
+              onRemove={() => {
+                removeVehicle(index);
+              }}
+              key={`${vehicle.type}-${index}`}
+            />
+          ))}
         </div>
       </main>
     </div>

@@ -4,12 +4,14 @@ import styles from "./VehicleCard.module.css";
 
 interface VehicleCardProps {
   vehicle: ActiveVehicle;
-  removeVehicle: (vehicle: ActiveVehicle) => void;
+  onDuplicate: () => void;
+  onRemove: () => void;
 }
 
 const VehicleCard: React.FC<VehicleCardProps> = ({
   vehicle,
-  removeVehicle
+  onDuplicate,
+  onRemove
 }): React.ReactElement => {
   return (
     <div className={styles.wrapper}>
@@ -31,7 +33,8 @@ const VehicleCard: React.FC<VehicleCardProps> = ({
         <dd>{vehicle.type.cost}</dd>
       </dl>
       {vehicle.type.specialRule && <p>{vehicle.type.specialRule}</p>}
-      <button onClick={() => removeVehicle(vehicle)}>Remove</button>
+      <button onClick={onDuplicate}>Duplicate</button>
+      <button onClick={onRemove}>Remove</button>
     </div>
   );
 };
