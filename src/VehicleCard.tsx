@@ -1,7 +1,11 @@
 import React from "react";
-import { Button, ButtonGroup, Card, Tabs, Tab, Tag } from "@blueprintjs/core";
+import {
+  Button, ButtonGroup, Card, Tabs, Tab, Tag,
+  HTMLTable, Icon
+} from "@blueprintjs/core";
 import { ActiveVehicle } from "./rules/vehicles";
 import styles from "./VehicleCard.module.css";
+import { WeaponType } from "./rules/weapons";
 
 interface VehicleCardProps {
   vehicle: ActiveVehicle;
@@ -65,11 +69,28 @@ const VehicleCard: React.FC<VehicleCardProps> = ({
             title="Weapons"
             panel={
               <>
-                <ul>
-                  {vehicle.weapons.map(weapon => (
-                    <li>{weapon.name}</li>
+                <HTMLTable>
+                  <thead>
+                    <tr>
+                      <td><Icon title="Weapon" icon="ninja" /></td>
+                      <td><Icon title="Range" icon="arrows-horizontal" /></td>
+                      <td><Icon title="Attack Dice" icon="cube" /></td>
+                      <td><Icon title="Build Slots" icon="cog" /></td>
+                      <td><Icon title="Cost" icon="dollar" /></td>
+                    </tr>
+                  </thead>
+                  <tbody>
+                  {vehicle.weapons.map((weapon: WeaponType) => (
+                    <tr>
+                      <td>{weapon.name}</td>
+                      <td title="Range">{weapon.range}</td>
+                      <td title="Attack Dice">{weapon.attackDice}D6</td>
+                      <td title="Build Slots">{weapon.buildSlots}</td>
+                      <td title="Cost">{weapon.cost}</td>
+                    </tr>
                   ))}
-                </ul>
+                  </tbody>
+                </HTMLTable>
                 <Button icon="add">Add Weapon</Button>
               </>
             }

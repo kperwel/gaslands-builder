@@ -5,8 +5,9 @@
 
 .specialRule {
   font-style: italic;
+  margin: 1em 0;
 }
 
 .kitContainer {
-  margin: 0.4em 0 1em;
+  margin: 0.4em 0 2em;
 }
