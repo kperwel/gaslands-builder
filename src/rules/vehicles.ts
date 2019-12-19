@@ -4,6 +4,7 @@ export type VehicleWeight = "Lightweight" | "Middleweight" | "Heavyweight";
 
 export interface VehicleType {
   name: string;
+  abbreviation: string;
   weight: VehicleWeight;
   hull: number;
   handling: number;
@@ -17,6 +18,7 @@ export interface VehicleType {
 export const vehicleTypes: VehicleType[] = [
   {
     name: "Buggy",
+    abbreviation: "bg",
     weight: "Lightweight",
     hull: 6,
     handling: 4,
@@ -28,6 +30,7 @@ export const vehicleTypes: VehicleType[] = [
   },
   {
     name: "Car",
+    abbreviation: "c",
     weight: "Middleweight",
     hull: 10,
     handling: 3,
@@ -38,6 +41,7 @@ export const vehicleTypes: VehicleType[] = [
   },
   {
     name: "Performance Car",
+    abbreviation: "pc",
     weight: "Middleweight",
     hull: 8,
     handling: 4,
@@ -49,6 +53,7 @@ export const vehicleTypes: VehicleType[] = [
   },
   {
     name: "Truck",
+    abbreviation: "t",
     weight: "Middleweight",
     hull: 12,
     handling: 2,
@@ -59,6 +64,7 @@ export const vehicleTypes: VehicleType[] = [
   },
   {
     name: "Heavy Truck",
+    abbreviation: "ht",
     weight: "Heavyweight",
     hull: 14,
     handling: 2,
@@ -69,6 +75,7 @@ export const vehicleTypes: VehicleType[] = [
   },
   {
     name: "Bus",
+    abbreviation: "bs",
     weight: "Heavyweight",
     hull: 16,
     handling: 2,

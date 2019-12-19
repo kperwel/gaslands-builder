@@ -51,14 +51,14 @@ const VehicleCard: React.FC<VehicleCardProps> = ({
           value: vehicle.type.cost
         }
       ].map(({ label, value }) => (
-        <div className={styles.propertyTag}>
+        <div className={styles.propertyTag} key={(label || "") +value}>
           <Tag>{label ? `${label}: ${value}` : value}</Tag>
         </div>
       ))}
 
       {vehicle.type.specialRule && (
         <div className={styles.specialRule}>
-          <td colSpan={2}>{vehicle.type.specialRule}</td>
+          {vehicle.type.specialRule}
         </div>
       )}
 
@@ -80,8 +80,8 @@ const VehicleCard: React.FC<VehicleCardProps> = ({
                     </tr>
                   </thead>
                   <tbody>
-                  {vehicle.weapons.map((weapon: WeaponType) => (
-                    <tr>
+                  {vehicle.weapons.map((weapon: WeaponType, index: number) => (
+                    <tr key={weapon.abbreviation + index}>
                       <td>{weapon.name}</td>
                       <td title="Range">{weapon.range}</td>
                       <td title="Attack Dice">{weapon.attackDice}D6</td>

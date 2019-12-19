@@ -4,6 +4,7 @@ export type WeaponSpecialRules = "Crew fired";
 
 export interface WeaponType {
   name: string;
+  abbreviation: string;
   range: WeaponRange;
   attackDice: number;
   specialRules: WeaponSpecialRules[];
@@ -15,6 +16,7 @@ export interface WeaponType {
 export const weaponTypes: WeaponType[] = [
   {
     name: "Handgun",
+    abbreviation: "hg",
     range: "Medium",
     attackDice: 1,
     specialRules: ["Crew fired"],
@@ -24,6 +26,7 @@ export const weaponTypes: WeaponType[] = [
   },
   {
     name: "Machine Gun",
+    abbreviation: "mg",
     range: "Double",
     attackDice: 2,
     specialRules: [],
@@ -32,6 +35,7 @@ export const weaponTypes: WeaponType[] = [
   },
   {
     name: "Heavy Machine Gun",
+    abbreviation: "hmg",
     range: "Double",
     attackDice: 3,
     specialRules: [],
@@ -40,6 +44,7 @@ export const weaponTypes: WeaponType[] = [
   },
   {
     name: "Minigun",
+    abbreviation: "mng",
     range: "Double",
     attackDice: 4,
     specialRules: [],
