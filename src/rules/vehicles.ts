@@ -92,5 +92,7 @@ export interface ActiveVehicle {
 }
 
 export function calculateTotalCost(vehicle: ActiveVehicle): number {
-  return vehicle.type.cost + vehicle.weapons.reduce((acc, {cost}) => acc + cost, 0);
+  return (
+    vehicle.type.cost + vehicle.weapons.reduce((acc, { cost }) => acc + cost, 0)
+  );
 }

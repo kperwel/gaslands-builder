@@ -23,6 +23,14 @@ interface VehicleCardProps {
   onRemove: () => void;
 }
 
+function buildTabTitle(title: string, items: Array<Object>) {
+  if (!items) {
+    return title;
+  }
+
+  return `${title} (${items.length})`;
+}
+
 const VehicleCard: React.FC<VehicleCardProps> = ({
   vehicle,
   onUpdate,
@@ -31,7 +39,9 @@ const VehicleCard: React.FC<VehicleCardProps> = ({
 }): React.ReactElement => {
   return (
     <Card>
-      <h2>{vehicle.type.name} ({calculateTotalCost(vehicle)} cans)</h2>
+      <h2>
+        {vehicle.type.name} ({calculateTotalCost(vehicle)} cans)
+      </h2>
       {[
         {
           value: vehicle.type.weight
@@ -74,7 +84,7 @@ const VehicleCard: React.FC<VehicleCardProps> = ({
         <Tabs>
           <Tab
             id="weapons"
-            title="Weapons"
+            title={buildTabTitle("Weapons", vehicle.weapons)}
             panel={
               <>
                 <HTMLTable>
@@ -95,6 +105,7 @@ const VehicleCard: React.FC<VehicleCardProps> = ({
                       <td>
                         <Icon title="Cost" icon="dollar" />
                       </td>
+                      <td>&nbsp;</td>
                     </tr>
                   </thead>
                   <tbody>
@@ -106,6 +117,19 @@ const VehicleCard: React.FC<VehicleCardProps> = ({
                           <td title="Attack Dice">{weapon.attackDice}D6</td>
                           <td title="Build Slots">{weapon.buildSlots}</td>
                           <td title="Cost">{weapon.cost}</td>
+                          <td>
+                            <Icon
+                              icon="delete"
+                              onClick={() => {
+                                onUpdate({
+                                  ...vehicle,
+                                  weapons: vehicle.weapons.filter(
+                                    (v, i) => i !== index
+                                  )
+                                });
+                              }}
+                            />
+                          </td>
                         </tr>
                       )
                     )}
@@ -114,18 +138,20 @@ const VehicleCard: React.FC<VehicleCardProps> = ({
                 <Popover
                   content={
                     <Menu>
-                      {weaponTypes.map(weapon => (
-                        <Menu.Item
-                          key={weapon.name}
-                          text={weapon.name}
-                          onClick={() =>
-                            onUpdate({
-                              ...vehicle,
-                              weapons: [...vehicle.weapons, weapon]
-                            })
-                          }
-                        ></Menu.Item>
-                      ))}
+                      {weaponTypes
+                        .filter(weapon => !weapon.nonRemovable)
+                        .map(weapon => (
+                          <Menu.Item
+                            key={weapon.name}
+                            text={weapon.name}
+                            onClick={() =>
+                              onUpdate({
+                                ...vehicle,
+                                weapons: [...vehicle.weapons, weapon]
+                              })
+                            }
+                          ></Menu.Item>
+                        ))}
                     </Menu>
                   }
                   position={Position.BOTTOM}
