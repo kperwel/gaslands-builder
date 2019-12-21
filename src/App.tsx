@@ -167,6 +167,7 @@ const App: React.FC = (): React.ReactElement => {
       </Navbar>
       <main className={styles.main}>
         <div className={styles.controls}>
+          <h1>New Team</h1>
           <Popover
             content={
               <Menu>
