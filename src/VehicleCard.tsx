@@ -12,7 +12,7 @@ import {
   Popover,
   Position
 } from "@blueprintjs/core";
-import { ActiveVehicle } from "./rules/vehicles";
+import { ActiveVehicle, calculateTotalCost } from "./rules/vehicles";
 import styles from "./VehicleCard.module.css";
 import { WeaponType, weaponTypes } from "./rules/weapons";
 
@@ -31,7 +31,7 @@ const VehicleCard: React.FC<VehicleCardProps> = ({
 }): React.ReactElement => {
   return (
     <Card>
-      <h2>{vehicle.type.name}</h2>
+      <h2>{vehicle.type.name} ({calculateTotalCost(vehicle)} cans)</h2>
       {[
         {
           value: vehicle.type.weight
