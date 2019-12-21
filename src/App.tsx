@@ -14,88 +14,9 @@ import {
   Position,
   EditableText
 } from "@blueprintjs/core";
+import { useQueryStringReducer } from "./queryString";
 import { defaultWeaponTypes, weaponTypes } from "./rules/weapons";
-
-type Isomorphism<T, V> = {
-  to: (t: T) => V;
-  from: (v: V) => T;
-};
-
-function useQueryString<T>(
-  initialState: T,
-  iso: Isomorphism<T, string>
-): [T, (v: T) => void] {
-  const [desiredState, setDesiredState] = React.useState(() =>
-    window.location.search
-      ? iso.from(window.location.search.slice(1))
-      : initialState
-  );
-
-  React.useEffect(() => {
-    const handler = setTimeout(
-      () =>
-        window.history.replaceState(
-          desiredState,
-          "",
-          `${window.location.pathname}?${iso.to(desiredState)}`
-        ),
-      10
-    );
-
-    return () => clearTimeout(handler);
-  }, [desiredState, iso]);
-
-  return [desiredState, setDesiredState];
-}
-
-function useQueryStringReducer<T, A>(
-  reducer: React.Reducer<T, A>,
-  initialState: T,
-  iso: Isomorphism<T, string>
-): [T, React.Dispatch<A>] {
-  const [state, setState] = useQueryString(initialState, iso);
-
-  const dispatch = React.useCallback(
-    (action: A) => setState(reducer(state, action)),
-    [reducer, state, setState]
-  );
-
-  return [state, dispatch];
-}
-
-interface AddVehicleAction {
-  type: "addVehicle";
-  vehicle: ActiveVehicle;
-}
-
-interface RemoveVehicleAction {
-  type: "removeVehicle";
-  index: number;
-}
-
-interface UpdateVehicleAction {
-  type: "updateVehicle";
-  index: number;
-  vehicle: ActiveVehicle;
-}
-
-interface UpdateTeamNameAction {
-  type: "updateTeamName";
-  name: string;
-}
-
-type VehicleAction =
-  | AddVehicleAction
-  | RemoveVehicleAction
-  | UpdateVehicleAction
-  | UpdateTeamNameAction;
-
-interface Team {
-  name: string;
-  vehicles: ActiveVehicle[];
-}
-
-const INITIAL_TEAM: Team = { name: "New Team", vehicles: [] };
+import { default as reducer, INITIAL_TEAM, Team } from "./teamReducer";
 
 type VehicleTypeAbbreviation = string;
 type WeaponTypeAbbreviation = string;
@@ -116,38 +37,6 @@ function calculateTotalTeamCost(team: Team) {
 }
 
 const App: React.FC = (): React.ReactElement => {
-  const reducer = (state: Team, action: VehicleAction) => {
-    switch (action.type) {
-      case "addVehicle":
-        return {
-          ...state,
-          vehicles: [...state.vehicles, action.vehicle]
-        };
-      case "removeVehicle":
-        return {
-          ...state,
-          vehicles: [
-            ...state.vehicles.slice(0, action.index),
-            ...state.vehicles.slice(action.index + 1)
-          ]
-        };
-      case "updateVehicle":
-        return {
-          ...state,
-          vehicles: state.vehicles.map((vehicle, index) =>
-            index === action.index ? action.vehicle : vehicle
-          )
-        };
-      case "updateTeamName":
-        return {
-          ...state,
-          name: action.name
-        };
-      default:
-        throw new Error(`unknown vhicle reducer action: ${action}`);
-    }
-  };
-
   const [team, dispatchTeamAction] = useQueryStringReducer(
     reducer,
     INITIAL_TEAM,
