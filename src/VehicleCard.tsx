@@ -118,17 +118,19 @@ const VehicleCard: React.FC<VehicleCardProps> = ({
                           <td title="Build Slots">{weapon.buildSlots}</td>
                           <td title="Cost">{weapon.cost}</td>
                           <td>
-                            <Icon
-                              icon="delete"
-                              onClick={() => {
-                                onUpdate({
-                                  ...vehicle,
-                                  weapons: vehicle.weapons.filter(
-                                    (v, i) => i !== index
-                                  )
-                                });
-                              }}
-                            />
+                            {!weapon.nonRemovable && (
+                              <Icon
+                                icon="delete"
+                                onClick={() => {
+                                  onUpdate({
+                                    ...vehicle,
+                                    weapons: vehicle.weapons.filter(
+                                      (v, i) => i !== index
+                                    )
+                                  });
+                                }}
+                              />
+                            )}
                           </td>
                         </tr>
                       )
