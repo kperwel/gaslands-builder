@@ -1,8 +1,19 @@
 import React from "react";
 import styles from "./App.module.css";
-import { ActiveVehicle, vehicleTypes } from "./rules/vehicles";
+import {
+  ActiveVehicle,
+  calculateTotalCost,
+  vehicleTypes
+} from "./rules/vehicles";
 import VehicleCard from "./VehicleCard";
-import { Button, Menu, Navbar, Popover, Position } from "@blueprintjs/core";
+import {
+  Button,
+  Menu,
+  Navbar,
+  Popover,
+  Position,
+  EditableText
+} from "@blueprintjs/core";
 import { defaultWeaponTypes, weaponTypes } from "./rules/weapons";
 
 type Isomorphism<T, V> = {
@@ -68,10 +79,23 @@ interface UpdateVehicleAction {
   vehicle: ActiveVehicle;
 }
 
+interface UpdateTeamNameAction {
+  type: "updateTeamName";
+  name: string;
+}
+
 type VehicleAction =
   | AddVehicleAction
   | RemoveVehicleAction
-  | UpdateVehicleAction;
+  | UpdateVehicleAction
+  | UpdateTeamNameAction;
+
+interface Team {
+  name: string;
+  vehicles: ActiveVehicle[];
+}
+
+const INITIAL_TEAM: Team = { name: "New Team", vehicles: [] };
 
 type VehicleTypeAbbreviation = string;
 type WeaponTypeAbbreviation = string;
@@ -79,83 +103,124 @@ type CondensedActiveVehicle = [
   VehicleTypeAbbreviation,
   WeaponTypeAbbreviation[]
 ];
+interface CondensedTeam {
+  name: string;
+  vehicles: CondensedActiveVehicle[];
+}
+
+function calculateTotalTeamCost(team: Team) {
+  return team.vehicles.reduce(
+    (acc, vehicle) => acc + calculateTotalCost(vehicle),
+    0
+  );
+}
 
 const App: React.FC = (): React.ReactElement => {
-  const reducer = (state: ActiveVehicle[], action: VehicleAction) => {
+  const reducer = (state: Team, action: VehicleAction) => {
     switch (action.type) {
       case "addVehicle":
-        return [...state, action.vehicle];
+        return {
+          ...state,
+          vehicles: [...state.vehicles, action.vehicle]
+        };
       case "removeVehicle":
-        return [
-          ...state.slice(0, action.index),
-          ...state.slice(action.index + 1)
-        ];
+        return {
+          ...state,
+          vehicles: [
+            ...state.vehicles.slice(0, action.index),
+            ...state.vehicles.slice(action.index + 1)
+          ]
+        };
       case "updateVehicle":
-        return state.map((vehicle, index) =>
-          index === action.index ? action.vehicle : vehicle
-        );
+        return {
+          ...state,
+          vehicles: state.vehicles.map((vehicle, index) =>
+            index === action.index ? action.vehicle : vehicle
+          )
+        };
+      case "updateTeamName":
+        return {
+          ...state,
+          name: action.name
+        };
       default:
         throw new Error(`unknown vhicle reducer action: ${action}`);
     }
   };
 
-  const [vehicles, dispatchVehicleAction] = useQueryStringReducer(reducer, [], {
-    from: (queryString: string): ActiveVehicle[] => {
-      try {
-        const parsed: CondensedActiveVehicle[] = JSON.parse(
-          decodeURIComponent(queryString)
-        );
-        return parsed.flatMap(
-          (condensed: CondensedActiveVehicle): ActiveVehicle[] => {
-            const [
-              vehicleTypeAbbreviation,
-              weaponTypeAbbreviations
-            ] = condensed;
-            const type = vehicleTypes.find(
-              v => v.abbreviation === vehicleTypeAbbreviation
-            );
+  const [team, dispatchTeamAction] = useQueryStringReducer(
+    reducer,
+    INITIAL_TEAM,
+    {
+      from: (queryString: string): Team => {
+        try {
+          const { name, vehicles }: CondensedTeam = JSON.parse(
+            decodeURIComponent(queryString)
+          );
+          return {
+            name,
+            vehicles: vehicles.flatMap(
+              (condensed: CondensedActiveVehicle): ActiveVehicle[] => {
+                const [
+                  vehicleTypeAbbreviation,
+                  weaponTypeAbbreviations
+                ] = condensed;
+                const type = vehicleTypes.find(
+                  v => v.abbreviation === vehicleTypeAbbreviation
+                );
 
-            if (!type) {
-              return [];
-            }
+                if (!type) {
+                  return [];
+                }
 
-            const weapons = weaponTypeAbbreviations.flatMap(abbr => {
-              const weapon = weaponTypes.find(w => w.abbreviation === abbr);
-              return weapon ? [weapon] : [];
-            });
+                const weapons = weaponTypeAbbreviations.flatMap(abbr => {
+                  const weapon = weaponTypes.find(w => w.abbreviation === abbr);
+                  return weapon ? [weapon] : [];
+                });
 
-            return [
-              {
-                type,
-                weapons
+                return [
+                  {
+                    type,
+                    weapons
+                  }
+                ];
               }
-            ];
-          }
-        );
-      } catch (e) {
-        console.warn("Unable to parse query string", e);
-        return [];
+            )
+          };
+        } catch (e) {
+          console.warn("Unable to parse query string", e);
+          return INITIAL_TEAM;
+        }
+      },
+      to: ({ name, vehicles }: Team): string => {
+        const condensedTeam: CondensedTeam = {
+          name,
+          vehicles: vehicles.map(v => [
+            v.type.abbreviation,
+            v.weapons.map(w => w.abbreviation)
+          ])
+        };
+        return JSON.stringify(condensedTeam);
       }
-    },
-    to: (state: ActiveVehicle[]): string => {
-      const condensedState: CondensedActiveVehicle[] = state.map(v => [
-        v.type.abbreviation,
-        v.weapons.map(w => w.abbreviation)
-      ]);
-      return JSON.stringify(condensedState);
     }
-  });
+  );
+
+  const { name, vehicles } = team;
 
   const addVehicle = (vehicle: ActiveVehicle): void => {
-    dispatchVehicleAction({ type: "addVehicle", vehicle });
+    dispatchTeamAction({ type: "addVehicle", vehicle });
   };
 
   const removeVehicle = (index: number): void => {
-    dispatchVehicleAction({ type: "removeVehicle", index });
+    dispatchTeamAction({ type: "removeVehicle", index });
   };
 
   const updateVehicle = (index: number, vehicle: ActiveVehicle): void => {
-    dispatchVehicleAction({ type: "updateVehicle", index, vehicle });
+    dispatchTeamAction({ type: "updateVehicle", index, vehicle });
+  };
+
+  const updateTeamName = (name: string): void => {
+    dispatchTeamAction({ type: "updateTeamName", name });
   };
 
   return (
@@ -167,7 +232,13 @@ const App: React.FC = (): React.ReactElement => {
       </Navbar>
       <main className={styles.main}>
         <div className={styles.controls}>
-          <h1>New Team</h1>
+          <h1>
+            <EditableText maxLength={80} value={name} onChange={updateTeamName}>
+              New Team
+            </EditableText>{" "}
+            ({calculateTotalTeamCost(team)} cans)
+          </h1>
+
           <Popover
             content={
               <Menu>
