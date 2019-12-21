@@ -1,7 +1,13 @@
 import React from "react";
 import {
-  Button, ButtonGroup, Card, Tabs, Tab, Tag,
-  HTMLTable, Icon
+  Button,
+  ButtonGroup,
+  Card,
+  Tabs,
+  Tab,
+  Tag,
+  HTMLTable,
+  Icon
 } from "@blueprintjs/core";
 import { ActiveVehicle } from "./rules/vehicles";
 import styles from "./VehicleCard.module.css";
@@ -51,15 +57,13 @@ const VehicleCard: React.FC<VehicleCardProps> = ({
           value: vehicle.type.cost
         }
       ].map(({ label, value }) => (
-        <div className={styles.propertyTag} key={(label || "") +value}>
+        <div className={styles.propertyTag} key={(label || "") + value}>
           <Tag>{label ? `${label}: ${value}` : value}</Tag>
         </div>
       ))}
 
       {vehicle.type.specialRule && (
-        <div className={styles.specialRule}>
-          {vehicle.type.specialRule}
-        </div>
+        <div className={styles.specialRule}>{vehicle.type.specialRule}</div>
       )}
 
       <div className={styles.kitContainer}>
@@ -72,23 +76,35 @@ const VehicleCard: React.FC<VehicleCardProps> = ({
                 <HTMLTable>
                   <thead>
                     <tr>
-                      <td><Icon title="Weapon" icon="ninja" /></td>
-                      <td><Icon title="Range" icon="arrows-horizontal" /></td>
-                      <td><Icon title="Attack Dice" icon="cube" /></td>
-                      <td><Icon title="Build Slots" icon="cog" /></td>
-                      <td><Icon title="Cost" icon="dollar" /></td>
+                      <td>
+                        <Icon title="Weapon" icon="ninja" />
+                      </td>
+                      <td>
+                        <Icon title="Range" icon="arrows-horizontal" />
+                      </td>
+                      <td>
+                        <Icon title="Attack Dice" icon="cube" />
+                      </td>
+                      <td>
+                        <Icon title="Build Slots" icon="cog" />
+                      </td>
+                      <td>
+                        <Icon title="Cost" icon="dollar" />
+                      </td>
                     </tr>
                   </thead>
                   <tbody>
-                  {vehicle.weapons.map((weapon: WeaponType, index: number) => (
-                    <tr key={weapon.abbreviation + index}>
-                      <td>{weapon.name}</td>
-                      <td title="Range">{weapon.range}</td>
-                      <td title="Attack Dice">{weapon.attackDice}D6</td>
-                      <td title="Build Slots">{weapon.buildSlots}</td>
-                      <td title="Cost">{weapon.cost}</td>
-                    </tr>
-                  ))}
+                    {vehicle.weapons.map(
+                      (weapon: WeaponType, index: number) => (
+                        <tr key={weapon.abbreviation + index}>
+                          <td>{weapon.name}</td>
+                          <td title="Range">{weapon.range}</td>
+                          <td title="Attack Dice">{weapon.attackDice}D6</td>
+                          <td title="Build Slots">{weapon.buildSlots}</td>
+                          <td title="Cost">{weapon.cost}</td>
+                        </tr>
+                      )
+                    )}
                   </tbody>
                 </HTMLTable>
                 <Button icon="add">Add Weapon</Button>
