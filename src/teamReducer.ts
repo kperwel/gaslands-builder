@@ -1,5 +1,6 @@
 import React from "react";
 import { ActiveVehicle } from "./rules/vehicles";
+import { Team } from "./team";
 
 interface AddVehicleAction {
   type: "addVehicle";
@@ -27,13 +28,6 @@ type VehicleAction =
   | RemoveVehicleAction
   | UpdateVehicleAction
   | UpdateTeamNameAction;
-
-export interface Team {
-  name: string;
-  vehicles: ActiveVehicle[];
-}
-
-export const INITIAL_TEAM: Team = { name: "New Team", vehicles: [] };
 
 const reducer: React.Reducer<Team, VehicleAction> = (state, action) => {
   switch (action.type) {
