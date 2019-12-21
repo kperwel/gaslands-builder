@@ -155,7 +155,7 @@ const App: React.FC = (): React.ReactElement => {
   };
 
   const updateVehicle = (index: number, vehicle: ActiveVehicle): void => {
-    dispatchVehicleAction({ type: "removeVehicle", index });
+    dispatchVehicleAction({ type: "updateVehicle", index, vehicle });
   };
 
   return (
@@ -198,8 +198,8 @@ const App: React.FC = (): React.ReactElement => {
             >
               <VehicleCard
                 vehicle={vehicle}
-                onUpdate={vehicle => {
-                  updateVehicle(index, vehicle);
+                onUpdate={updatedVehicle => {
+                  updateVehicle(index, updatedVehicle);
                 }}
                 onDuplicate={() => {
                   addVehicle(vehicle);

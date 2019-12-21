@@ -7,11 +7,14 @@ import {
   Tab,
   Tag,
   HTMLTable,
-  Icon
+  Icon,
+  Menu,
+  Popover,
+  Position
 } from "@blueprintjs/core";
 import { ActiveVehicle } from "./rules/vehicles";
 import styles from "./VehicleCard.module.css";
-import { WeaponType } from "./rules/weapons";
+import { WeaponType, weaponTypes } from "./rules/weapons";
 
 interface VehicleCardProps {
   vehicle: ActiveVehicle;
@@ -22,6 +25,7 @@ interface VehicleCardProps {
 
 const VehicleCard: React.FC<VehicleCardProps> = ({
   vehicle,
+  onUpdate,
   onDuplicate,
   onRemove
 }): React.ReactElement => {
@@ -107,7 +111,28 @@ const VehicleCard: React.FC<VehicleCardProps> = ({
                     )}
                   </tbody>
                 </HTMLTable>
-                <Button icon="add">Add Weapon</Button>
+                <Popover
+                  content={
+                    <Menu>
+                      {weaponTypes.map(weapon => (
+                        <Menu.Item
+                          key={weapon.name}
+                          text={weapon.name}
+                          onClick={() =>
+                            onUpdate({
+                              ...vehicle,
+                              weapons: [...vehicle.weapons, weapon]
+                            })
+                          }
+                        ></Menu.Item>
+                      ))}
+                    </Menu>
+                  }
+                  position={Position.BOTTOM}
+                  minimal
+                >
+                  <Button icon="add">Add Weapon</Button>
+                </Popover>
               </>
             }
           ></Tab>
