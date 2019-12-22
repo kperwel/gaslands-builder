@@ -14,7 +14,7 @@ import {
 } from "@blueprintjs/core";
 import { ActiveVehicle, calculateTotalCost } from "./rules/vehicles";
 import styles from "./VehicleCard.module.css";
-import { WeaponType, weaponTypes } from "./rules/weapons";
+import { ActiveWeapon, weaponTypes } from "./rules/weapons";
 
 interface VehicleCardProps {
   vehicle: ActiveVehicle;
@@ -110,15 +110,15 @@ const VehicleCard: React.FC<VehicleCardProps> = ({
                   </thead>
                   <tbody>
                     {vehicle.weapons.map(
-                      (weapon: WeaponType, index: number) => (
-                        <tr key={weapon.abbreviation + index}>
-                          <td>{weapon.name}</td>
-                          <td title="Range">{weapon.range}</td>
-                          <td title="Attack Dice">{weapon.attackDice}D6</td>
-                          <td title="Build Slots">{weapon.buildSlots}</td>
-                          <td title="Cost">{weapon.cost}</td>
+                      ({ type, facing }: ActiveWeapon, index: number) => (
+                        <tr key={type.abbreviation + index}>
+                          <td>{type.name}</td>
+                          <td title="Range">{type.range}</td>
+                          <td title="Attack Dice">{type.attackDice}D6</td>
+                          <td title="Build Slots">{type.buildSlots}</td>
+                          <td title="Cost">{type.cost}</td>
                           <td>
-                            {!weapon.nonRemovable && (
+                            {!type.nonRemovable && (
                               <Icon
                                 icon="delete"
                                 onClick={() => {
@@ -149,7 +149,10 @@ const VehicleCard: React.FC<VehicleCardProps> = ({
                             onClick={() =>
                               onUpdate({
                                 ...vehicle,
-                                weapons: [...vehicle.weapons, weapon]
+                                weapons: [
+                                  ...vehicle.weapons,
+                                  { type: weapon, facing: "front" }
+                                ]
                               })
                             }
                           ></Menu.Item>

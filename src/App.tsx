@@ -70,7 +70,10 @@ const App: React.FC = (): React.ReactElement => {
                     onClick={() =>
                       addVehicle({
                         type,
-                        weapons: defaultWeaponTypes
+                        weapons: defaultWeaponTypes.map(type => ({
+                          type,
+                          facing: "front"
+                        }))
                       })
                     }
                   ></Menu.Item>

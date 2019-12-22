@@ -3,7 +3,7 @@ import {
   calculateTotalCost,
   vehicleTypes
 } from "./rules/vehicles";
-import { weaponTypes } from "./rules/weapons";
+import { weaponFacingStringIsomorphism, weaponTypes } from "./rules/weapons";
 
 export interface Team {
   name: string;
@@ -12,9 +12,12 @@ export interface Team {
 
 type VehicleTypeAbbreviation = string;
 type WeaponTypeAbbreviation = string;
+type WeaponFacingAbbreviation = string;
+type CondensedActiveWeapon = [WeaponTypeAbbreviation, WeaponFacingAbbreviation];
+
 type CondensedActiveVehicle = [
   VehicleTypeAbbreviation,
-  WeaponTypeAbbreviation[]
+  CondensedActiveWeapon[]
 ];
 
 interface CondensedTeam {
@@ -41,10 +44,7 @@ export const teamCondensationIsomorphism = {
         name,
         vehicles: vehicles.flatMap(
           (condensed: CondensedActiveVehicle): ActiveVehicle[] => {
-            const [
-              vehicleTypeAbbreviation,
-              weaponTypeAbbreviations
-            ] = condensed;
+            const [vehicleTypeAbbreviation, condensedActiveWeapons] = condensed;
             const type = vehicleTypes.find(
               v => v.abbreviation === vehicleTypeAbbreviation
             );
@@ -53,10 +53,23 @@ export const teamCondensationIsomorphism = {
               return [];
             }
 
-            const weapons = weaponTypeAbbreviations.flatMap(abbr => {
-              const weapon = weaponTypes.find(w => w.abbreviation === abbr);
-              return weapon ? [weapon] : [];
-            });
+            const weapons = condensedActiveWeapons.flatMap(
+              ([typeAbbreviation, facingAbbreviation]) => {
+                const type = weaponTypes.find(
+                  w => w.abbreviation === typeAbbreviation
+                );
+                return type
+                  ? [
+                      {
+                        type,
+                        facing: weaponFacingStringIsomorphism.from(
+                          facingAbbreviation
+                        )
+                      }
+                    ]
+                  : [];
+              }
+            );
 
             return [
               {
@@ -75,10 +88,17 @@ export const teamCondensationIsomorphism = {
   to: ({ name, vehicles }: Team): string => {
     const condensedTeam: CondensedTeam = {
       name,
-      vehicles: vehicles.map(v => [
-        v.type.abbreviation,
-        v.weapons.map(w => w.abbreviation)
-      ])
+      vehicles: vehicles.map(
+        (v: ActiveVehicle): CondensedActiveVehicle => [
+          v.type.abbreviation,
+          v.weapons.map(
+            ({ type, facing }): CondensedActiveWeapon => [
+              type.abbreviation,
+              weaponFacingStringIsomorphism.to(facing)
+            ]
+          )
+        ]
+      )
     };
     return JSON.stringify(condensedTeam);
   }

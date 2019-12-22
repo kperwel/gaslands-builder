@@ -1,4 +1,4 @@
-import { WeaponType } from "./weapons";
+import { ActiveWeapon } from "./weapons";
 
 export type VehicleWeight = "Lightweight" | "Middleweight" | "Heavyweight";
 
@@ -88,11 +88,12 @@ export const vehicleTypes: VehicleType[] = [
 
 export interface ActiveVehicle {
   type: VehicleType;
-  weapons: WeaponType[];
+  weapons: ActiveWeapon[];
 }
 
 export function calculateTotalCost(vehicle: ActiveVehicle): number {
   return (
-    vehicle.type.cost + vehicle.weapons.reduce((acc, { cost }) => acc + cost, 0)
+    vehicle.type.cost +
+    vehicle.weapons.reduce((acc, { type: { cost } }) => acc + cost, 0)
   );
 }
