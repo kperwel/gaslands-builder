@@ -11,3 +11,7 @@
 .kitContainer {
   margin: 0.4em 0 2em;
 }
+
+.toggleWeaponFacing {
+  cursor: pointer;
+}

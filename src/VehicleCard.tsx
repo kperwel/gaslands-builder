@@ -14,7 +14,13 @@ import {
 } from "@blueprintjs/core";
 import { ActiveVehicle, calculateTotalCost } from "./rules/vehicles";
 import styles from "./VehicleCard.module.css";
-import { ActiveWeapon, weaponTypes } from "./rules/weapons";
+import {
+  ActiveWeapon,
+  getNextFacing,
+  WeaponFacing,
+  weaponTypes
+} from "./rules/weapons";
+import { assertNever } from "assert-never";
 
 interface VehicleCardProps {
   vehicle: ActiveVehicle;
@@ -23,12 +29,27 @@ interface VehicleCardProps {
   onRemove: () => void;
 }
 
-function buildTabTitle(title: string, items: Array<Object>) {
+function buildTabTitle(title: string, items: Array<Object>): string {
   if (!items) {
     return title;
   }
 
   return `${title} (${items.length})`;
+}
+
+function buildArcOfFireIcon(facing: WeaponFacing): React.ReactNode {
+  switch (facing) {
+    case "front":
+      return <Icon icon="arrow-up" title="front" />;
+    case "rear":
+      return <Icon icon="arrow-down" title="rear" />;
+    case "side":
+      return <Icon icon="arrows-horizontal" title="sides" />;
+    case "turret":
+      return <Icon icon="circle" title="360°" />;
+    default:
+      assertNever(facing);
+  }
 }
 
 const VehicleCard: React.FC<VehicleCardProps> = ({
@@ -94,6 +115,9 @@ const VehicleCard: React.FC<VehicleCardProps> = ({
                         <Icon title="Weapon" icon="ninja" />
                       </td>
                       <td>
+                        <Icon title="Arc of fire" icon="locate" />
+                      </td>
+                      <td>
                         <Icon title="Range" icon="arrows-horizontal" />
                       </td>
                       <td>
@@ -113,6 +137,34 @@ const VehicleCard: React.FC<VehicleCardProps> = ({
                       ({ type, facing }: ActiveWeapon, index: number) => (
                         <tr key={type.abbreviation + index}>
                           <td>{type.name}</td>
+                          <td>
+                            {facing === "turret" ? (
+                              buildArcOfFireIcon(facing)
+                            ) : (
+                              <div
+                                className={styles.toggleWeaponFacing}
+                                onClick={() => {
+                                  onUpdate({
+                                    ...vehicle,
+                                    weapons: vehicle.weapons.map((w, i) => {
+                                      if (
+                                        i !== index ||
+                                        w.facing === "turret"
+                                      ) {
+                                        return w;
+                                      }
+                                      return {
+                                        type: w.type,
+                                        facing: getNextFacing(w.facing)
+                                      };
+                                    })
+                                  });
+                                }}
+                              >
+                                {buildArcOfFireIcon(facing)}
+                              </div>
+                            )}
+                          </td>
                           <td title="Range">{type.range}</td>
                           <td title="Attack Dice">{type.attackDice}D6</td>
                           <td title="Build Slots">{type.buildSlots}</td>

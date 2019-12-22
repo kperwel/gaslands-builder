@@ -57,14 +57,16 @@ export const defaultWeaponTypes: WeaponType[] = weaponTypes.filter(
   ({ nonRemovable }) => nonRemovable
 );
 
-// TODO: add 360° mounting
-export type WeaponFacing = "front" | "rear" | "side";
+export type WeaponFacing = "front" | "rear" | "side" | "turret";
 
 const weaponFacingAbbreviations: { [key: string]: WeaponFacing } = {
   f: "front",
   r: "rear",
-  s: "side"
+  s: "side",
+  t: "turret"
 };
+
+const facings: WeaponFacing[] = Object.values(weaponFacingAbbreviations);
 
 export const weaponFacingStringIsomorphism = {
   to: (facing: WeaponFacing): string => {
@@ -78,6 +80,12 @@ export const weaponFacingStringIsomorphism = {
     return weaponFacingAbbreviations[abbreviation] || "front";
   }
 };
+
+export function getNextFacing(facing: WeaponFacing): WeaponFacing {
+  const currentIndex = facings.indexOf(facing);
+  const nextIndex = (currentIndex + 1) % 3;
+  return facings[nextIndex];
+}
 
 export interface ActiveWeapon {
   type: WeaponType;
