@@ -1,10 +1,6 @@
 import React from "react";
 import styles from "./App.module.css";
-import {
-  ActiveVehicle,
-  calculateTotalCost,
-  vehicleTypes
-} from "./rules/vehicles";
+import { ActiveVehicle, vehicleTypes } from "./rules/vehicles";
 import VehicleCard from "./VehicleCard";
 import {
   Button,
@@ -17,20 +13,17 @@ import {
 import { useQueryStringReducer } from "./queryString";
 import { defaultWeaponTypes } from "./rules/weapons";
 import reducer from "./teamReducer";
-import { INITIAL_TEAM, Team, teamIsomorphism } from "./team";
-
-function calculateTotalTeamCost(team: Team) {
-  return team.vehicles.reduce(
-    (acc, vehicle) => acc + calculateTotalCost(vehicle),
-    0
-  );
-}
+import {
+  calculateTotalTeamCost,
+  INITIAL_TEAM,
+  teamCondensationIsomorphism
+} from "./team";
 
 const App: React.FC = (): React.ReactElement => {
   const [team, dispatchTeamAction] = useQueryStringReducer(
     reducer,
     INITIAL_TEAM,
-    teamIsomorphism
+    teamCondensationIsomorphism
   );
 
   const { name, vehicles } = team;

@@ -1,4 +1,8 @@
-import { ActiveVehicle, vehicleTypes } from "./rules/vehicles";
+import {
+  ActiveVehicle,
+  calculateTotalCost,
+  vehicleTypes
+} from "./rules/vehicles";
 import { weaponTypes } from "./rules/weapons";
 
 export interface Team {
@@ -20,7 +24,14 @@ interface CondensedTeam {
 
 export const INITIAL_TEAM: Team = { name: "New Team", vehicles: [] };
 
-export const teamIsomorphism = {
+export function calculateTotalTeamCost(team: Team) {
+  return team.vehicles.reduce(
+    (acc, vehicle) => acc + calculateTotalCost(vehicle),
+    0
+  );
+}
+
+export const teamCondensationIsomorphism = {
   from: (queryString: string): Team => {
     try {
       const { name, vehicles }: CondensedTeam = JSON.parse(
