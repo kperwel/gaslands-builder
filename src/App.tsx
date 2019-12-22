@@ -15,7 +15,7 @@ import {
   EditableText
 } from "@blueprintjs/core";
 import { useQueryStringReducer } from "./queryString";
-import { defaultWeaponTypes, weaponTypes } from "./rules/weapons";
+import { defaultWeaponTypes } from "./rules/weapons";
 import reducer from "./teamReducer";
 import { INITIAL_TEAM, Team, teamIsomorphism } from "./team";
 
