@@ -4,6 +4,11 @@ import {
   vehicleTypes
 } from "./rules/vehicles";
 import { weaponFacingStringIsomorphism, weaponTypes } from "./rules/weapons";
+import {
+  ActiveVehicleUpgrade,
+  VehicleUpgrade,
+  vehicleUpgrades
+} from "./rules/vehicleUpgrades";
 
 export interface Team {
   name: string;
@@ -14,10 +19,16 @@ type VehicleTypeAbbreviation = string;
 type WeaponTypeAbbreviation = string;
 type WeaponFacingAbbreviation = string;
 type CondensedActiveWeapon = [WeaponTypeAbbreviation, WeaponFacingAbbreviation];
+type UpgradeTypeAbbreviaiton = string;
+type UpgradeAmount = number;
+type CondensedActiveUpgrade =
+  | [UpgradeTypeAbbreviaiton]
+  | [UpgradeTypeAbbreviaiton, UpgradeAmount];
 
 type CondensedActiveVehicle = [
   VehicleTypeAbbreviation,
-  CondensedActiveWeapon[]
+  CondensedActiveWeapon[],
+  CondensedActiveUpgrade[]
 ];
 
 interface CondensedTeam {
@@ -44,7 +55,11 @@ export const teamCondensationIsomorphism = {
         name,
         vehicles: vehicles.flatMap(
           (condensed: CondensedActiveVehicle): ActiveVehicle[] => {
-            const [vehicleTypeAbbreviation, condensedActiveWeapons] = condensed;
+            const [
+              vehicleTypeAbbreviation,
+              condensedActiveWeapons,
+              condensedUpgrades
+            ] = condensed;
             const type = vehicleTypes.find(
               v => v.abbreviation === vehicleTypeAbbreviation
             );
@@ -71,10 +86,20 @@ export const teamCondensationIsomorphism = {
               }
             );
 
+            const upgrades: ActiveVehicleUpgrade[] = condensedUpgrades.flatMap(
+              ([typeAbbreviation, amount = 1]) => {
+                const type = vehicleUpgrades.find(
+                  u => u.abbreviation === typeAbbreviation
+                );
+                return type ? [{ type, amount }] : [];
+              }
+            );
+
             return [
               {
                 type,
-                weapons
+                weapons,
+                upgrades
               }
             ];
           }
@@ -96,7 +121,11 @@ export const teamCondensationIsomorphism = {
               type.abbreviation,
               weaponFacingStringIsomorphism.to(facing)
             ]
-          )
+          ),
+          v.upgrades.map(({ type: { abbreviation }, amount }) => [
+            abbreviation,
+            amount
+          ])
         ]
       )
     };

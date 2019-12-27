@@ -12,7 +12,11 @@ import {
   Popover,
   Position
 } from "@blueprintjs/core";
-import { ActiveVehicle, calculateTotalCost } from "./rules/vehicles";
+import {
+  ActiveVehicle,
+  calculateTotalCost,
+  calculateTotalHull
+} from "./rules/vehicles";
 import styles from "./VehicleCard.module.css";
 import {
   ActiveWeapon,
@@ -21,6 +25,11 @@ import {
   weaponTypes
 } from "./rules/weapons";
 import { assertNever } from "assert-never";
+import {
+  ActiveVehicleUpgrade,
+  VehicleUpgrade,
+  vehicleUpgrades
+} from "./rules/vehicleUpgrades";
 
 interface VehicleCardProps {
   vehicle: ActiveVehicle;
@@ -30,7 +39,7 @@ interface VehicleCardProps {
 }
 
 function buildTabTitle(title: string, items: Array<Object>): string {
-  if (!items) {
+  if (!items || items.length === 0) {
     return title;
   }
 
@@ -69,7 +78,7 @@ const VehicleCard: React.FC<VehicleCardProps> = ({
         },
         {
           label: "Hull",
-          value: vehicle.type.hull
+          value: calculateTotalHull(vehicle)
         },
         {
           label: "Handling",
@@ -142,7 +151,7 @@ const VehicleCard: React.FC<VehicleCardProps> = ({
                               buildArcOfFireIcon(facing)
                             ) : (
                               <div
-                                className={styles.toggleWeaponFacing}
+                                className={styles.actionIcon}
                                 onClick={() => {
                                   onUpdate({
                                     ...vehicle,
@@ -169,6 +178,7 @@ const VehicleCard: React.FC<VehicleCardProps> = ({
                           <td>
                             {!type.isDefault && (
                               <Icon
+                                className={styles.actionIcon}
                                 icon="delete"
                                 onClick={() => {
                                   onUpdate({
@@ -218,10 +228,135 @@ const VehicleCard: React.FC<VehicleCardProps> = ({
           ></Tab>
           <Tab
             id="upgrade"
-            title="Upgrades"
+            title={buildTabTitle("Upgrades", vehicle.upgrades)}
             panel={
               <>
-                <Button icon="add">Add Upgrade</Button>
+                <HTMLTable>
+                  <thead>
+                    <tr>
+                      <td>
+                        <Icon title="Upgrade" icon="asterisk" />
+                      </td>
+                      <td>&nbsp;</td>
+                      <td>
+                        <Icon title="Build Slots" icon="cog" />
+                      </td>
+                      <td>
+                        <Icon title="Cost" icon="dollar" />
+                      </td>
+                      <td>&nbsp;</td>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {vehicle.upgrades.map(({ type, amount }, index: number) => (
+                      <tr key={type.abbreviation + index}>
+                        <td>
+                          {type.name + (amount > 1 ? ` (${amount}×)` : "")}
+                        </td>
+                        <td>{type.description}</td>
+                        <td title="Build Slots">{type.buildSlots}</td>
+                        <td title="Cost">{type.cost}</td>
+                        <td className={styles.tableCellControls}>
+                          {type.canBeUsedMultipleTimes ? (
+                            <>
+                              <Icon
+                                className={styles.actionIcon}
+                                icon="add"
+                                title="Add"
+                                onClick={() => {
+                                  onUpdate({
+                                    ...vehicle,
+                                    upgrades: vehicle.upgrades.map(u =>
+                                      u.type === type
+                                        ? {
+                                            type,
+                                            amount: u.amount + 1
+                                          }
+                                        : u
+                                    )
+                                  });
+                                }}
+                              />
+                              <span>&nbsp;</span>
+                              <Icon
+                                className={styles.actionIcon}
+                                icon="remove"
+                                title="Remove"
+                                onClick={() => {
+                                  onUpdate({
+                                    ...vehicle,
+                                    upgrades:
+                                      amount > 1
+                                        ? vehicle.upgrades.map(u =>
+                                            u.type === type
+                                              ? {
+                                                  type,
+                                                  amount: u.amount - 1
+                                                }
+                                              : u
+                                          )
+                                        : vehicle.upgrades.filter(
+                                            (v, i) => i !== index
+                                          )
+                                  });
+                                }}
+                              />
+                            </>
+                          ) : (
+                            <Icon
+                              className={styles.actionIcon}
+                              icon="delete"
+                              title="Delete"
+                              onClick={() => {
+                                onUpdate({
+                                  ...vehicle,
+                                  upgrades: vehicle.upgrades.filter(
+                                    (v, i) => i !== index
+                                  )
+                                });
+                              }}
+                            />
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </HTMLTable>
+                <Popover
+                  content={
+                    <Menu>
+                      {vehicleUpgrades.map(upgrade => (
+                        <Menu.Item
+                          key={upgrade.name}
+                          text={upgrade.name}
+                          onClick={() => {
+                            const currentUpgrade = vehicle.upgrades.find(
+                              u => u.type === upgrade
+                            );
+                            const upgrades: ActiveVehicleUpgrade[] = currentUpgrade
+                              ? vehicle.upgrades.map(({ type, amount }) =>
+                                  type === upgrade
+                                    ? { type, amount: amount + 1 }
+                                    : { type, amount }
+                                )
+                              : [
+                                  ...vehicle.upgrades,
+                                  { type: upgrade, amount: 1 }
+                                ];
+                            onUpdate({
+                              ...vehicle,
+                              upgrades
+                            });
+                          }}
+                        ></Menu.Item>
+                      ))}
+                    </Menu>
+                  }
+                  position={Position.BOTTOM}
+                  minimal
+                >
+                  <Button icon="add">Add Upgrade</Button>
+                </Popover>
               </>
             }
           ></Tab>

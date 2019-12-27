@@ -1,4 +1,9 @@
 import { ActiveWeapon } from "./weapons";
+import {
+  ActiveVehicleUpgrade,
+  VehicleUpgrade,
+  VehicleUpgradeEffect
+} from "./vehicleUpgrades";
 
 export type VehicleWeight = "Lightweight" | "Middleweight" | "Heavyweight";
 
@@ -89,11 +94,40 @@ export const vehicleTypes: VehicleType[] = [
 export interface ActiveVehicle {
   type: VehicleType;
   weapons: ActiveWeapon[];
+  upgrades: ActiveVehicleUpgrade[];
 }
 
-export function calculateTotalCost(vehicle: ActiveVehicle): number {
+export function calculateTotalCost({
+  type,
+  weapons,
+  upgrades
+}: ActiveVehicle): number {
   return (
-    vehicle.type.cost +
-    vehicle.weapons.reduce((acc, { type: { cost } }) => acc + cost, 0)
+    type.cost +
+    weapons.reduce((acc, { type: { cost } }) => acc + cost, 0) +
+    upgrades.reduce((acc, { type: { cost }, amount }) => acc + amount * cost, 0)
   );
+}
+
+export function calculateTotalHull(vehicle: ActiveVehicle): number {
+  const upgradeHullPoints = vehicle.upgrades
+    .flatMap(
+      activeUpgrade =>
+        Array.from({ length: activeUpgrade.amount }).fill(
+          activeUpgrade.type
+        ) as VehicleUpgrade[]
+    )
+    .flatMap(upgradeType => upgradeType.effects)
+    .reduce(
+      (acc, effect) =>
+        acc + (effect.type === "ArmourUpgradeEffect" ? effect.hull : 0),
+      0
+    );
+
+  console.log({
+    upgrades: vehicle.upgrades,
+    upgradeHullPoints
+  });
+
+  return vehicle.type.hull + upgradeHullPoints;
 }

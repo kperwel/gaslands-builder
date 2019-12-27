@@ -12,6 +12,10 @@
   margin: 0.4em 0 2em;
 }
 
-.toggleWeaponFacing {
+.actionIcon {
   cursor: pointer;
+}
+
+.tableCellControls {
+  white-space: pre;
 }
