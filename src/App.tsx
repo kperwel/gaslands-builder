@@ -72,7 +72,7 @@ const App: React.FC = (): React.ReactElement => {
                         type,
                         weapons: defaultWeaponTypes.map(type => ({
                           type,
-                          facing: "front"
+                          facing: type.isCrewFired ? "turret" : "front"
                         }))
                       })
                     }

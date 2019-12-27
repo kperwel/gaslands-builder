@@ -10,7 +10,8 @@ export interface WeaponType {
   specialRules: WeaponSpecialRules[];
   buildSlots: number;
   cost: number;
-  nonRemovable?: boolean;
+  isDefault?: boolean;
+  isCrewFired?: boolean;
 }
 
 export const weaponTypes: WeaponType[] = [
@@ -22,7 +23,8 @@ export const weaponTypes: WeaponType[] = [
     specialRules: ["Crew fired"],
     buildSlots: 0,
     cost: 0,
-    nonRemovable: true
+    isDefault: true,
+    isCrewFired: true
   },
   {
     name: "Machine Gun",
@@ -54,7 +56,7 @@ export const weaponTypes: WeaponType[] = [
 ];
 
 export const defaultWeaponTypes: WeaponType[] = weaponTypes.filter(
-  ({ nonRemovable }) => nonRemovable
+  ({ isDefault }) => isDefault
 );
 
 export type WeaponFacing = "front" | "rear" | "side" | "turret";
@@ -82,6 +84,10 @@ export const weaponFacingStringIsomorphism = {
 };
 
 export function getNextFacing(facing: WeaponFacing): WeaponFacing {
+  if (facing === "turret") {
+    return "turret";
+  }
+
   const currentIndex = facings.indexOf(facing);
   const nextIndex = (currentIndex + 1) % 3;
   return facings[nextIndex];

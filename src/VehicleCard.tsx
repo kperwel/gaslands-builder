@@ -147,10 +147,7 @@ const VehicleCard: React.FC<VehicleCardProps> = ({
                                   onUpdate({
                                     ...vehicle,
                                     weapons: vehicle.weapons.map((w, i) => {
-                                      if (
-                                        i !== index ||
-                                        w.facing === "turret"
-                                      ) {
+                                      if (i !== index) {
                                         return w;
                                       }
                                       return {
@@ -170,7 +167,7 @@ const VehicleCard: React.FC<VehicleCardProps> = ({
                           <td title="Build Slots">{type.buildSlots}</td>
                           <td title="Cost">{type.cost}</td>
                           <td>
-                            {!type.nonRemovable && (
+                            {!type.isDefault && (
                               <Icon
                                 icon="delete"
                                 onClick={() => {
@@ -193,7 +190,7 @@ const VehicleCard: React.FC<VehicleCardProps> = ({
                   content={
                     <Menu>
                       {weaponTypes
-                        .filter(weapon => !weapon.nonRemovable)
+                        .filter(weapon => !weapon.isDefault)
                         .map(weapon => (
                           <Menu.Item
                             key={weapon.name}
