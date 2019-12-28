@@ -25,6 +25,7 @@ import {
 import styles from "./VehicleCard.module.css";
 import {
   ActiveWeapon,
+  calculateActiveWeaponCost,
   getNextFacing,
   WeaponFacing,
   weaponTypes
@@ -53,15 +54,27 @@ function buildTabTitle(title: string, items: Array<Object>): string {
 }
 
 function buildArcOfFireIcon(facing: WeaponFacing): React.ReactNode {
-  switch (facing) {
+  switch (facing.direction) {
     case "front":
       return <Icon icon="arrow-up" title="front" />;
     case "rear":
       return <Icon icon="arrow-down" title="rear" />;
     case "side":
       return <Icon icon="arrows-horizontal" title="sides" />;
-    case "turret":
-      return <Icon icon="circle" title="360°" />;
+    case "360°":
+      return (
+        <Icon
+          icon={"circle"}
+          intent={
+            facing.type === "WeaponFacingUserSelected" ? "success" : "none"
+          }
+          title={
+            facing.type === "WeaponFacingUserSelected"
+              ? "Turret mounted for 3× price"
+              : "360°"
+          }
+        />
+      );
     default:
       assertNever(facing);
   }
@@ -173,7 +186,7 @@ const VehicleCard: React.FC<VehicleCardProps> = ({
                         <tr key={type.abbreviation + index}>
                           <td>{type.name}</td>
                           <td>
-                            {facing === "turret" ? (
+                            {facing.type !== "WeaponFacingUserSelected" ? (
                               buildArcOfFireIcon(facing)
                             ) : (
                               <div
@@ -200,7 +213,9 @@ const VehicleCard: React.FC<VehicleCardProps> = ({
                           <td title="Range">{type.range}</td>
                           <td title="Attack Dice">{type.attackDice}D6</td>
                           <td title="Build Slots">{type.buildSlots}</td>
-                          <td title="Cost">{type.cost}</td>
+                          <td title="Cost">
+                            {calculateActiveWeaponCost({ type, facing })}
+                          </td>
                           <td>
                             {!type.isDefault && (
                               <Icon
@@ -236,7 +251,18 @@ const VehicleCard: React.FC<VehicleCardProps> = ({
                                 ...vehicle,
                                 weapons: [
                                   ...vehicle.weapons,
-                                  { type: weapon, facing: "front" }
+                                  {
+                                    type: weapon,
+                                    facing: weapon.isCrewFired
+                                      ? {
+                                          type: "WeaponFacingCrewFired",
+                                          direction: "360°"
+                                        }
+                                      : {
+                                          type: "WeaponFacingUserSelected",
+                                          direction: "front"
+                                        }
+                                  }
                                 ]
                               })
                             }

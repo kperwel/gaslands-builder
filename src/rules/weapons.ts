@@ -1,5 +1,6 @@
-export type WeaponRange = "Short" | "Medium" | "Double";
+import { assertNever } from "assert-never";
 
+export type WeaponRange = "Short" | "Medium" | "Double";
 export type WeaponSpecialRules = "Crew fired";
 
 export interface WeaponType {
@@ -59,41 +60,124 @@ export const defaultWeaponTypes: WeaponType[] = weaponTypes.filter(
   ({ isDefault }) => isDefault
 );
 
-export type WeaponFacing = "front" | "rear" | "side" | "turret";
+type WeaponFacingType =
+  | "WeaponFacingUserSelected"
+  | "WeaponFacingTurretMounted"
+  | "WeaponFacingCrewFired";
+type WeaponFacingDirection = "front" | "rear" | "side" | "360°";
+interface WeaponFacingBase<
+  T extends WeaponFacingType,
+  D extends WeaponFacingDirection = WeaponFacingDirection
+> {
+  type: T;
+  direction: D;
+}
+interface WeaponFacingUserSelected
+  extends WeaponFacingBase<"WeaponFacingUserSelected"> {}
+interface WeaponFacingTurretMounted
+  extends WeaponFacingBase<"WeaponFacingTurretMounted", "360°"> {}
+interface WeaponFacingCrewFired
+  extends WeaponFacingBase<"WeaponFacingCrewFired", "360°"> {}
+export type WeaponFacing =
+  | WeaponFacingUserSelected
+  | WeaponFacingTurretMounted
+  | WeaponFacingCrewFired;
 
-const weaponFacingAbbreviations: { [key: string]: WeaponFacing } = {
+const weaponFacingTypeAbbreviations: { [key: string]: WeaponFacingType } = {
+  u: "WeaponFacingUserSelected",
+  t: "WeaponFacingTurretMounted",
+  c: "WeaponFacingCrewFired"
+};
+
+const weaponFacingDirectionAbbreviations: {
+  [key: string]: WeaponFacingDirection;
+} = {
   f: "front",
   r: "rear",
   s: "side",
-  t: "turret"
+  t: "360°"
 };
-
-const facings: WeaponFacing[] = Object.values(weaponFacingAbbreviations);
+const directions: WeaponFacingDirection[] = Object.values(
+  weaponFacingDirectionAbbreviations
+);
 
 export const weaponFacingStringIsomorphism = {
   to: (facing: WeaponFacing): string => {
-    return (
-      (Object.entries(weaponFacingAbbreviations).find(
-        ([k, v]) => v === facing
-      ) || [])[0] || "f"
-    );
+    const typeAbbreviation: string = (Object.entries(
+      weaponFacingTypeAbbreviations
+    ).find(([k, v]) => v === facing.type) ||
+      Object.keys(weaponFacingTypeAbbreviations))[0];
+
+    const { type } = facing;
+
+    switch (type) {
+      case "WeaponFacingUserSelected":
+        const directionAbbreviation: string = (Object.entries(
+          weaponFacingDirectionAbbreviations
+        ).find(([k, v]) => v === facing.direction) ||
+          Object.keys(weaponFacingDirectionAbbreviations))[0];
+        return typeAbbreviation + ":" + directionAbbreviation;
+      case "WeaponFacingTurretMounted":
+      case "WeaponFacingCrewFired":
+        return typeAbbreviation;
+      default:
+        assertNever(type);
+    }
   },
   from: (abbreviation: string): WeaponFacing => {
-    return weaponFacingAbbreviations[abbreviation] || "front";
+    const type: WeaponFacingType =
+      weaponFacingTypeAbbreviations[abbreviation.substr(0, 1)] ||
+      "WeaponFacingUserSelected";
+    switch (type) {
+      case "WeaponFacingUserSelected":
+        const direction: WeaponFacingDirection =
+          weaponFacingDirectionAbbreviations[abbreviation.substr(2, 1)] ||
+          "front";
+        return {
+          type: "WeaponFacingUserSelected",
+          direction
+        };
+      case "WeaponFacingTurretMounted":
+      case "WeaponFacingCrewFired":
+        return {
+          type,
+          direction: "360°"
+        };
+      default:
+        assertNever(type);
+    }
   }
 };
 
-export function getNextFacing(facing: WeaponFacing): WeaponFacing {
-  if (facing === "turret") {
-    return "turret";
+export function getNextFacing({ type, direction }: WeaponFacing): WeaponFacing {
+  switch (type) {
+    case "WeaponFacingUserSelected":
+      const currentIndex = directions.indexOf(direction);
+      const nextIndex = (currentIndex + 1) % 4;
+      return {
+        type,
+        direction: directions[nextIndex]
+      };
+    case "WeaponFacingTurretMounted":
+    case "WeaponFacingCrewFired":
+      return { type, direction: "360°" };
+    default:
+      assertNever(type);
   }
-
-  const currentIndex = facings.indexOf(facing);
-  const nextIndex = (currentIndex + 1) % 3;
-  return facings[nextIndex];
 }
 
 export interface ActiveWeapon {
   type: WeaponType;
   facing: WeaponFacing;
+}
+
+export function calculateActiveWeaponCost({
+  type,
+  facing
+}: ActiveWeapon): number {
+  return (
+    (facing.type === "WeaponFacingUserSelected" && facing.direction === "360°"
+      ? 3
+      : 1) * type.cost
+  );
 }

@@ -1,4 +1,4 @@
-import { ActiveWeapon } from "./weapons";
+import { ActiveWeapon, calculateActiveWeaponCost } from "./weapons";
 import { ActiveVehicleUpgrade, VehicleUpgrade } from "./vehicleUpgrades";
 
 export type VehicleWeight = "Lightweight" | "Middleweight" | "Heavyweight";
@@ -100,7 +100,10 @@ export function calculateTotalCost({
 }: ActiveVehicle): number {
   return (
     type.cost +
-    weapons.reduce((acc, { type: { cost } }) => acc + cost, 0) +
+    weapons.reduce(
+      (acc, weapon) => acc + calculateActiveWeaponCost(weapon),
+      0
+    ) +
     upgrades.reduce((acc, { type: { cost }, amount }) => acc + amount * cost, 0)
   );
 }

@@ -117,7 +117,6 @@ export const vehicleUpgrades: VehicleUpgrade[] = [
     cost: 4,
     quantity: "single"
   }
-  // TODO: Turret Mounting for Weapon
   // TODO: Ram
   // TODO: Exploding Ram
 ];
