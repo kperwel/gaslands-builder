@@ -4,11 +4,7 @@ import {
   vehicleTypes
 } from "./rules/vehicles";
 import { weaponFacingStringIsomorphism, weaponTypes } from "./rules/weapons";
-import {
-  ActiveVehicleUpgrade,
-  VehicleUpgrade,
-  vehicleUpgrades
-} from "./rules/vehicleUpgrades";
+import { ActiveVehicleUpgrade, vehicleUpgrades } from "./rules/vehicleUpgrades";
 
 export interface Team {
   name: string;

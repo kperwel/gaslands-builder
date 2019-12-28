@@ -120,11 +120,6 @@ export function calculateTotalHull(vehicle: ActiveVehicle): number {
       0
     );
 
-  console.log({
-    upgrades: vehicle.upgrades,
-    upgradeHullPoints
-  });
-
   return vehicle.type.hull + upgradeHullPoints;
 }
 
@@ -139,4 +134,21 @@ export function calculateBuildSlotsInUse(vehicle: ActiveVehicle): number {
   );
 
   return weaponSlots + upgradeSlots;
+}
+
+export function calculateTotalCrew(vehicle: ActiveVehicle): number {
+  const upgradeSlots = vehicle.upgrades
+    .map(({ type, amount }: ActiveVehicleUpgrade): number => {
+      const crewOfAllEffects = type.effects
+        .map(effect => (effect.type === "CrewUpgradeEffect" ? effect.crew : 0))
+        .reduce(
+          (acc: number, currentEffectCrew: number): number =>
+            acc + currentEffectCrew,
+          0
+        );
+      return amount * crewOfAllEffects;
+    })
+    .reduce((acc: number, currentUpgradeCrew) => acc + currentUpgradeCrew, 0);
+
+  return vehicle.type.crew + upgradeSlots;
 }

@@ -17,6 +17,7 @@ import {
   ActiveVehicle,
   calculateBuildSlotsInUse,
   calculateTotalCost,
+  calculateTotalCrew,
   calculateTotalHull
 } from "./rules/vehicles";
 import styles from "./VehicleCard.module.css";
@@ -27,7 +28,11 @@ import {
   weaponTypes
 } from "./rules/weapons";
 import { assertNever } from "assert-never";
-import { ActiveVehicleUpgrade, vehicleUpgrades } from "./rules/vehicleUpgrades";
+import {
+  ActiveVehicleUpgrade,
+  vehicleUpgradeLimitCalculators,
+  vehicleUpgrades
+} from "./rules/vehicleUpgrades";
 
 interface VehicleCardProps {
   vehicle: ActiveVehicle;
@@ -97,7 +102,7 @@ const VehicleCard: React.FC<VehicleCardProps> = ({
       <VehiclePropertyTag label="Hull" value={calculateTotalHull(vehicle)} />
       <VehiclePropertyTag label="Handling" value={vehicle.type.handling} />
       <VehiclePropertyTag label="Max. Gear" value={vehicle.type.maxGear} />
-      <VehiclePropertyTag label="Crew" value={vehicle.type.crew} />
+      <VehiclePropertyTag label="Crew" value={calculateTotalCrew(vehicle)} />
       <VehiclePropertyTag value={vehicle.type.weight} />
 
       {vehicle.type.specialRule && (
@@ -225,97 +230,113 @@ const VehicleCard: React.FC<VehicleCardProps> = ({
             title={buildTabTitle("Upgrades", vehicle.upgrades)}
             panel={
               <>
-                <HTMLTable>
-                  <thead>
-                    <tr>
-                      <td>
-                        <Icon title="Upgrade" icon="asterisk" />
-                      </td>
-                      <td>&nbsp;</td>
-                      <td>
-                        <Icon title="Build Slots" icon="cog" />
-                      </td>
-                      <td>
-                        <Icon title="Cost" icon="dollar" />
-                      </td>
-                      <td>&nbsp;</td>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {vehicle.upgrades.map(({ type, amount }, index: number) => (
-                      <tr key={type.abbreviation + index}>
+                {vehicle.upgrades.length > 0 && (
+                  <HTMLTable>
+                    <thead>
+                      <tr>
                         <td>
-                          {type.name + (amount > 1 ? ` (${amount}×)` : "")}
+                          <Icon title="Upgrade" icon="asterisk" />
                         </td>
-                        <td>{type.description}</td>
-                        <td title="Build Slots">{type.buildSlots}</td>
-                        <td title="Cost">{type.cost}</td>
-                        <td className={styles.tableCellControls}>
-                          {type.canBeUsedMultipleTimes ? (
-                            <>
-                              <Icon
-                                className={styles.actionIcon}
-                                icon="add"
-                                title="Add"
-                                onClick={() => {
-                                  onUpdate({
-                                    ...vehicle,
-                                    upgrades: vehicle.upgrades.map(u =>
-                                      u.type === type
-                                        ? {
-                                            type,
-                                            amount: u.amount + 1
-                                          }
-                                        : u
-                                    )
-                                  });
-                                }}
-                              />
-                              <span>&nbsp;</span>
-                              <Icon
-                                className={styles.actionIcon}
-                                icon="remove"
-                                title="Remove"
-                                onClick={() => {
-                                  onUpdate({
-                                    ...vehicle,
-                                    upgrades:
-                                      amount > 1
-                                        ? vehicle.upgrades.map(u =>
-                                            u.type === type
-                                              ? {
-                                                  type,
-                                                  amount: u.amount - 1
-                                                }
-                                              : u
-                                          )
-                                        : vehicle.upgrades.filter(
-                                            (v, i) => i !== index
-                                          )
-                                  });
-                                }}
-                              />
-                            </>
-                          ) : (
-                            <Icon
-                              className={styles.actionIcon}
-                              icon="delete"
-                              title="Delete"
-                              onClick={() => {
-                                onUpdate({
-                                  ...vehicle,
-                                  upgrades: vehicle.upgrades.filter(
-                                    (v, i) => i !== index
-                                  )
-                                });
-                              }}
-                            />
-                          )}
+                        <td>&nbsp;</td>
+                        <td>
+                          <Icon title="Build Slots" icon="cog" />
                         </td>
+                        <td>
+                          <Icon title="Cost" icon="dollar" />
+                        </td>
+                        <td>&nbsp;</td>
                       </tr>
-                    ))}
-                  </tbody>
-                </HTMLTable>
+                    </thead>
+                    <tbody>
+                      {vehicle.upgrades.map(
+                        ({ type, amount }, index: number) => (
+                          <tr key={type.abbreviation + index}>
+                            <td>
+                              {type.name + (amount > 1 ? ` (${amount}×)` : "")}
+                            </td>
+                            <td>{type.description}</td>
+                            <td title="Build Slots">{type.buildSlots}</td>
+                            <td title="Cost">{type.cost}</td>
+                            <td className={styles.tableCellControls}>
+                              {type.quantity === "unlimited" ||
+                              type.quantity === "limited" ? (
+                                <>
+                                  {(type.quantity === "unlimited" ||
+                                    (type.quantity === "limited" &&
+                                      amount <
+                                        (
+                                          vehicleUpgradeLimitCalculators[
+                                            type.abbreviation
+                                          ] || (() => 0)
+                                        )(vehicle))) && (
+                                    <>
+                                      <Icon
+                                        className={styles.actionIcon}
+                                        icon="add"
+                                        title="Add"
+                                        onClick={() => {
+                                          onUpdate({
+                                            ...vehicle,
+                                            upgrades: vehicle.upgrades.map(u =>
+                                              u.type === type
+                                                ? {
+                                                    type,
+                                                    amount: u.amount + 1
+                                                  }
+                                                : u
+                                            )
+                                          });
+                                        }}
+                                      />
+                                      <span>&nbsp;</span>
+                                    </>
+                                  )}
+                                  <Icon
+                                    className={styles.actionIcon}
+                                    icon="remove"
+                                    title="Remove"
+                                    onClick={() => {
+                                      onUpdate({
+                                        ...vehicle,
+                                        upgrades:
+                                          amount > 1
+                                            ? vehicle.upgrades.map(u =>
+                                                u.type === type
+                                                  ? {
+                                                      type,
+                                                      amount: u.amount - 1
+                                                    }
+                                                  : u
+                                              )
+                                            : vehicle.upgrades.filter(
+                                                (v, i) => i !== index
+                                              )
+                                      });
+                                    }}
+                                  />
+                                </>
+                              ) : (
+                                <Icon
+                                  className={styles.actionIcon}
+                                  icon="delete"
+                                  title="Delete"
+                                  onClick={() => {
+                                    onUpdate({
+                                      ...vehicle,
+                                      upgrades: vehicle.upgrades.filter(
+                                        (v, i) => i !== index
+                                      )
+                                    });
+                                  }}
+                                />
+                              )}
+                            </td>
+                          </tr>
+                        )
+                      )}
+                    </tbody>
+                  </HTMLTable>
+                )}
                 <Popover
                   content={
                     <Menu>
