@@ -65,6 +65,7 @@ type WeaponFacingType =
   | "WeaponFacingTurretMounted"
   | "WeaponFacingCrewFired";
 type WeaponFacingDirection = "front" | "rear" | "side" | "360°";
+
 interface WeaponFacingBase<
   T extends WeaponFacingType,
   D extends WeaponFacingDirection = WeaponFacingDirection
@@ -72,12 +73,16 @@ interface WeaponFacingBase<
   type: T;
   direction: D;
 }
+
 interface WeaponFacingUserSelected
   extends WeaponFacingBase<"WeaponFacingUserSelected"> {}
+
 interface WeaponFacingTurretMounted
   extends WeaponFacingBase<"WeaponFacingTurretMounted", "360°"> {}
+
 interface WeaponFacingCrewFired
   extends WeaponFacingBase<"WeaponFacingCrewFired", "360°"> {}
+
 export type WeaponFacing =
   | WeaponFacingUserSelected
   | WeaponFacingTurretMounted
@@ -171,13 +176,13 @@ export interface ActiveWeapon {
   facing: WeaponFacing;
 }
 
-export function calculateActiveWeaponCost({
-  type,
-  facing
-}: ActiveWeapon): number {
+export function isTurretMountedWeapon({ type, facing }: ActiveWeapon): boolean {
   return (
-    (facing.type === "WeaponFacingUserSelected" && facing.direction === "360°"
-      ? 3
-      : 1) * type.cost
+    facing.type === "WeaponFacingUserSelected" && facing.direction === "360°"
   );
+}
+
+export function calculateActiveWeaponCost(weapon: ActiveWeapon): number {
+  const mountFactor = isTurretMountedWeapon(weapon) ? 3 : 1;
+  return mountFactor * weapon.type.cost;
 }

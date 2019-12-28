@@ -27,6 +27,7 @@ import {
   ActiveWeapon,
   calculateActiveWeaponCost,
   getNextFacing,
+  isTurretMountedWeapon,
   WeaponFacing,
   weaponTypes
 } from "./rules/weapons";
@@ -283,7 +284,8 @@ const VehicleCard: React.FC<VehicleCardProps> = ({
             title={buildTabTitle("Upgrades", vehicle.upgrades)}
             panel={
               <>
-                {vehicle.upgrades.length > 0 && (
+                {(vehicle.upgrades.length > 0 ||
+                  vehicle.weapons.filter(isTurretMountedWeapon).length > 0) && (
                   <HTMLTable>
                     <thead>
                       <tr>
@@ -386,6 +388,17 @@ const VehicleCard: React.FC<VehicleCardProps> = ({
                           </tr>
                         )
                       )}
+                      {vehicle.weapons
+                        .filter(isTurretMountedWeapon)
+                        .map(({ type }, index) => (
+                          <tr key={type.abbreviation + index}>
+                            <td>{"Turret mounting for " + type.name}</td>
+                            <td>See weapons</td>
+                            <td title="Build Slots"></td>
+                            <td title="Cost">3× weapon cost</td>
+                            <td>&nbsp;</td>
+                          </tr>
+                        ))}
                     </tbody>
                   </HTMLTable>
                 )}
