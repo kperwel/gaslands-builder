@@ -52,6 +52,8 @@ export const vehicleUpgrades: VehicleUpgrade[] = [
     cost: 4,
     quantity: "unlimited"
   },
+  // TODO: Experimental Nuclear Engine (after Sponsors, Mishkin only)
+  // TODO: Experimental Teleporter (after Sponsors, Mishkin only)
   {
     name: "Extra Crewmember",
     abbreviation: "c",
@@ -67,6 +69,37 @@ export const vehicleUpgrades: VehicleUpgrade[] = [
     quantity: "limited"
   },
   {
+    name: "Improvised Sludge Thrower",
+    abbreviation: "st",
+    description:
+      "May place burst template for dropped weapons anywhere at least partially within medium range and 360° arc of fire",
+    effects: [],
+    buildSlots: 1,
+    cost: 2,
+    quantity: "single"
+  },
+  {
+    name: "Nitro Booster",
+    abbreviation: "nb",
+    description:
+      "Before normal movement step may make forced long straight move forward & gain hazards tokens until 5",
+    effects: [],
+    buildSlots: 0,
+    cost: 6,
+    quantity: "single"
+  },
+  {
+    // TODO: automatically added for free for buggy
+    name: "Roll Cage",
+    abbreviation: "rc",
+    description: "Ignore 2 hits from flip",
+    effects: [],
+    buildSlots: 1,
+    cost: 4,
+    quantity: "single"
+  },
+  {
+    // TODO: not for tank, helicopter & gyrocopter
     name: "Tank Tracks",
     abbreviation: "tt",
     description: "-1 Max gear, +1 Handling",
@@ -83,8 +116,10 @@ export const vehicleUpgrades: VehicleUpgrade[] = [
     buildSlots: 1,
     cost: 4,
     quantity: "single"
-    // TODO: not for tank, helicopter & gyrocopter
   }
+  // TODO: Turret Mounting for Weapon
+  // TODO: Ram
+  // TODO: Exploding Ram
 ];
 
 export const vehicleUpgradeLimitCalculators: {
