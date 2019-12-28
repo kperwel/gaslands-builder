@@ -93,6 +93,15 @@ export const vehicleUpgradeLimitCalculators: {
   c: vehicle => vehicle.type.crew
 };
 
+export function calculateUpgradeQuantityLimit(
+  upgrade: VehicleUpgrade,
+  vehicle: ActiveVehicle
+) {
+  return (vehicleUpgradeLimitCalculators[upgrade.abbreviation] || (() => 0))(
+    vehicle
+  );
+}
+
 export interface ActiveVehicleUpgrade {
   type: VehicleUpgrade;
   amount: number;

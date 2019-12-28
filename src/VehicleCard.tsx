@@ -32,7 +32,8 @@ import {
 import { assertNever } from "assert-never";
 import {
   ActiveVehicleUpgrade,
-  vehicleUpgradeLimitCalculators,
+  calculateUpgradeQuantityLimit,
+  VehicleUpgrade,
   vehicleUpgrades
 } from "./rules/vehicleUpgrades";
 
@@ -80,6 +81,30 @@ const VehiclePropertyTag: React.FC<VehiclePropertyTagProps> = ({
     <Tag intent={intent}>{label ? `${label}: ${value}` : value}</Tag>
   </div>
 );
+
+function canUpgradeBeAddedToVehicle(
+  upgrade: VehicleUpgrade,
+  vehicle: ActiveVehicle
+): boolean {
+  const usedUpgrade = vehicle.upgrades.find(({ type }) => type === upgrade);
+
+  if (!usedUpgrade) {
+    return true;
+  }
+
+  switch (upgrade.quantity) {
+    case "single":
+      return false;
+    case "unlimited":
+      return true;
+    case "limited":
+      return (
+        usedUpgrade.amount < calculateUpgradeQuantityLimit(upgrade, vehicle)
+      );
+    default:
+      assertNever(upgrade.quantity);
+  }
+}
 
 const VehicleCard: React.FC<VehicleCardProps> = ({
   vehicle,
@@ -266,11 +291,10 @@ const VehicleCard: React.FC<VehicleCardProps> = ({
                                   {(type.quantity === "unlimited" ||
                                     (type.quantity === "limited" &&
                                       amount <
-                                        (
-                                          vehicleUpgradeLimitCalculators[
-                                            type.abbreviation
-                                          ] || (() => 0)
-                                        )(vehicle))) && (
+                                        calculateUpgradeQuantityLimit(
+                                          type,
+                                          vehicle
+                                        ))) && (
                                     <>
                                       <Icon
                                         className={styles.actionIcon}
@@ -342,36 +366,34 @@ const VehicleCard: React.FC<VehicleCardProps> = ({
                 <Popover
                   content={
                     <Menu>
-                      {vehicleUpgrades
-                        .filter(upgrade => {
-                          // TODO: only allow adding permitted upgrades
-                          return true;
-                        })
-                        .map(upgrade => (
-                          <Menu.Item
-                            key={upgrade.name}
-                            text={upgrade.name}
-                            onClick={() => {
-                              const currentUpgrade = vehicle.upgrades.find(
-                                u => u.type === upgrade
-                              );
-                              const upgrades: ActiveVehicleUpgrade[] = currentUpgrade
-                                ? vehicle.upgrades.map(({ type, amount }) =>
-                                    type === upgrade
-                                      ? { type, amount: amount + 1 }
-                                      : { type, amount }
-                                  )
-                                : [
-                                    ...vehicle.upgrades,
-                                    { type: upgrade, amount: 1 }
-                                  ];
-                              onUpdate({
-                                ...vehicle,
-                                upgrades
-                              });
-                            }}
-                          ></Menu.Item>
-                        ))}
+                      {vehicleUpgrades.map(upgrade => (
+                        <Menu.Item
+                          key={upgrade.name}
+                          text={upgrade.name}
+                          disabled={
+                            !canUpgradeBeAddedToVehicle(upgrade, vehicle)
+                          }
+                          onClick={() => {
+                            const currentUpgrade = vehicle.upgrades.find(
+                              u => u.type === upgrade
+                            );
+                            const upgrades: ActiveVehicleUpgrade[] = currentUpgrade
+                              ? vehicle.upgrades.map(({ type, amount }) =>
+                                  type === upgrade
+                                    ? { type, amount: amount + 1 }
+                                    : { type, amount }
+                                )
+                              : [
+                                  ...vehicle.upgrades,
+                                  { type: upgrade, amount: 1 }
+                                ];
+                            onUpdate({
+                              ...vehicle,
+                              upgrades
+                            });
+                          }}
+                        ></Menu.Item>
+                      ))}
                     </Menu>
                   }
                   position={Position.BOTTOM}

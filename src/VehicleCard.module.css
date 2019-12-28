@@ -18,4 +18,5 @@
 
 .tableCellControls {
   white-space: pre;
+  text-align: right !important;
 }
