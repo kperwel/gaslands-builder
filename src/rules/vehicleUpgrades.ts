@@ -8,14 +8,22 @@ interface ArmourUpgradeEffect extends BaseUpgradeEffect<"ArmourUpgradeEffect"> {
 }
 export interface CrewUpgradeEffect
   extends BaseUpgradeEffect<"CrewUpgradeEffect"> {
-  crew: 1;
+  crew: number;
+}
+export interface MaxGearUpgradeEffect
+  extends BaseUpgradeEffect<"MaxGearUpgradeEffect"> {
+  gear: number;
+}
+export interface HandlingUpgradeEffect
+  extends BaseUpgradeEffect<"HandlingUpgradeEffect"> {
+  handling: number;
 }
 
-export type VehicleUpgradeEffect = ArmourUpgradeEffect | CrewUpgradeEffect;
-
-interface UpgradeQuantityBase<T extends string> {
-  type: T;
-}
+export type VehicleUpgradeEffect =
+  | ArmourUpgradeEffect
+  | CrewUpgradeEffect
+  | MaxGearUpgradeEffect
+  | HandlingUpgradeEffect;
 
 export type UpgradeQuantity = "single" | "limited" | "unlimited";
 
@@ -57,6 +65,25 @@ export const vehicleUpgrades: VehicleUpgrade[] = [
     buildSlots: 0,
     cost: 4,
     quantity: "limited"
+  },
+  {
+    name: "Tank Tracks",
+    abbreviation: "tt",
+    description: "-1 Max gear, +1 Handling",
+    effects: [
+      {
+        type: "MaxGearUpgradeEffect",
+        gear: -1
+      },
+      {
+        type: "HandlingUpgradeEffect",
+        handling: 1
+      }
+    ],
+    buildSlots: 1,
+    cost: 4,
+    quantity: "single"
+    // TODO: not for tank, helicopter & gyrocopter
   }
 ];
 

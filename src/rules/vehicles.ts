@@ -137,7 +137,7 @@ export function calculateBuildSlotsInUse(vehicle: ActiveVehicle): number {
 }
 
 export function calculateTotalCrew(vehicle: ActiveVehicle): number {
-  const upgradeSlots = vehicle.upgrades
+  const upgradeCrew = vehicle.upgrades
     .map(({ type, amount }: ActiveVehicleUpgrade): number => {
       const crewOfAllEffects = type.effects
         .map(effect => (effect.type === "CrewUpgradeEffect" ? effect.crew : 0))
@@ -150,5 +150,46 @@ export function calculateTotalCrew(vehicle: ActiveVehicle): number {
     })
     .reduce((acc: number, currentUpgradeCrew) => acc + currentUpgradeCrew, 0);
 
-  return vehicle.type.crew + upgradeSlots;
+  return vehicle.type.crew + upgradeCrew;
+}
+
+export function calculateMaxGear(vehicle: ActiveVehicle): number {
+  const upgradeMaxGear = vehicle.upgrades
+    .map(({ type, amount }: ActiveVehicleUpgrade): number => {
+      const gearOfAllEffects = type.effects
+        .map(effect =>
+          effect.type === "MaxGearUpgradeEffect" ? effect.gear : 0
+        )
+        .reduce(
+          (acc: number, currentEffectGear: number): number =>
+            acc + currentEffectGear,
+          0
+        );
+      return amount * gearOfAllEffects;
+    })
+    .reduce((acc: number, currentUpgradeGear) => acc + currentUpgradeGear, 0);
+
+  return Math.min(6, Math.max(1, vehicle.type.maxGear + upgradeMaxGear));
+}
+
+export function calculateHandling(vehicle: ActiveVehicle): number {
+  const upgradeHandling = vehicle.upgrades
+    .map(({ type, amount }: ActiveVehicleUpgrade): number => {
+      const handlingOfAllEffects = type.effects
+        .map(effect =>
+          effect.type === "HandlingUpgradeEffect" ? effect.handling : 0
+        )
+        .reduce(
+          (acc: number, currentEffectHandling: number): number =>
+            acc + currentEffectHandling,
+          0
+        );
+      return amount * handlingOfAllEffects;
+    })
+    .reduce(
+      (acc: number, currentUpgradeHandling) => acc + currentUpgradeHandling,
+      0
+    );
+
+  return vehicle.type.handling + upgradeHandling;
 }
