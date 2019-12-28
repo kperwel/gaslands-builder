@@ -109,6 +109,28 @@ const App: React.FC = (): React.ReactElement => {
           ))}
         </div>
       </main>
+      <div className={styles.footer}>
+        <a href="https://gaslands.com/" target="_blank" rel="noopener">
+          Gaslands
+        </a>
+        , the amazing tabletop game, and all properties belong to Mike
+        Hutchinson.
+        <br />
+        Gaslands Builder is built by{" "}
+        <a href="https://twitter.com/bfncs" target="_blank" rel="noopener">
+          bfncs
+        </a>
+        .<br />
+        Issues? Report and contribute on{" "}
+        <a
+          href="https://github.com/bfncs/gaslands-builder"
+          target="_blank"
+          rel="noopener"
+        >
+          Github
+        </a>
+        .<br />
+      </div>
     </div>
   );
 };
