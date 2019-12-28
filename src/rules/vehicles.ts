@@ -1,9 +1,5 @@
 import { ActiveWeapon } from "./weapons";
-import {
-  ActiveVehicleUpgrade,
-  VehicleUpgrade,
-  VehicleUpgradeEffect
-} from "./vehicleUpgrades";
+import { ActiveVehicleUpgrade, VehicleUpgrade } from "./vehicleUpgrades";
 
 export type VehicleWeight = "Lightweight" | "Middleweight" | "Heavyweight";
 
@@ -130,4 +126,17 @@ export function calculateTotalHull(vehicle: ActiveVehicle): number {
   });
 
   return vehicle.type.hull + upgradeHullPoints;
+}
+
+export function calculateBuildSlotsInUse(vehicle: ActiveVehicle): number {
+  const weaponSlots = vehicle.weapons.reduce(
+    (acc: number, w: ActiveWeapon) => acc + w.type.buildSlots,
+    0
+  );
+  const upgradeSlots = vehicle.upgrades.reduce(
+    (acc: number, { type, amount }) => acc + amount * type.buildSlots,
+    0
+  );
+
+  return weaponSlots + upgradeSlots;
 }

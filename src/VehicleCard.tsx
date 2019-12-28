@@ -3,17 +3,19 @@ import {
   Button,
   ButtonGroup,
   Card,
-  Tabs,
-  Tab,
-  Tag,
   HTMLTable,
   Icon,
+  Intent,
   Menu,
   Popover,
-  Position
+  Position,
+  Tab,
+  Tabs,
+  Tag
 } from "@blueprintjs/core";
 import {
   ActiveVehicle,
+  calculateBuildSlotsInUse,
   calculateTotalCost,
   calculateTotalHull
 } from "./rules/vehicles";
@@ -25,11 +27,7 @@ import {
   weaponTypes
 } from "./rules/weapons";
 import { assertNever } from "assert-never";
-import {
-  ActiveVehicleUpgrade,
-  VehicleUpgrade,
-  vehicleUpgrades
-} from "./rules/vehicleUpgrades";
+import { ActiveVehicleUpgrade, vehicleUpgrades } from "./rules/vehicleUpgrades";
 
 interface VehicleCardProps {
   vehicle: ActiveVehicle;
@@ -61,50 +59,46 @@ function buildArcOfFireIcon(facing: WeaponFacing): React.ReactNode {
   }
 }
 
+interface VehiclePropertyTagProps {
+  value: string | number;
+  label?: string;
+  intent?: Intent;
+}
+const VehiclePropertyTag: React.FC<VehiclePropertyTagProps> = ({
+  label,
+  value,
+  intent
+}): React.ReactElement => (
+  <div className={styles.propertyTag} key={(label || "") + value}>
+    <Tag intent={intent}>{label ? `${label}: ${value}` : value}</Tag>
+  </div>
+);
+
 const VehicleCard: React.FC<VehicleCardProps> = ({
   vehicle,
   onUpdate,
   onDuplicate,
   onRemove
 }): React.ReactElement => {
+  const buildSlotsInUse = calculateBuildSlotsInUse(vehicle);
   return (
     <Card>
-      <h2>
-        {vehicle.type.name} ({calculateTotalCost(vehicle)} cans)
-      </h2>
-      {[
-        {
-          value: vehicle.type.weight
-        },
-        {
-          label: "Hull",
-          value: calculateTotalHull(vehicle)
-        },
-        {
-          label: "Handling",
-          value: vehicle.type.handling
-        },
-        {
-          label: "Max. Gear",
-          value: vehicle.type.maxGear
-        },
-        {
-          label: "Crew",
-          value: vehicle.type.crew
-        },
-        {
-          label: "Build Slots",
-          value: vehicle.type.buildSlots
-        },
-        {
-          label: "Cost",
-          value: vehicle.type.cost
+      <h2>{vehicle.type.name}</h2>
+      <VehiclePropertyTag label="Cost" value={calculateTotalCost(vehicle)} />
+      <VehiclePropertyTag
+        label="Build Slots"
+        value={
+          buildSlotsInUse > 0
+            ? `${buildSlotsInUse}/${vehicle.type.buildSlots}`
+            : vehicle.type.buildSlots
         }
-      ].map(({ label, value }) => (
-        <div className={styles.propertyTag} key={(label || "") + value}>
-          <Tag>{label ? `${label}: ${value}` : value}</Tag>
-        </div>
-      ))}
+        intent={buildSlotsInUse > vehicle.type.buildSlots ? "danger" : "none"}
+      />
+      <VehiclePropertyTag label="Hull" value={calculateTotalHull(vehicle)} />
+      <VehiclePropertyTag label="Handling" value={vehicle.type.handling} />
+      <VehiclePropertyTag label="Max. Gear" value={vehicle.type.maxGear} />
+      <VehiclePropertyTag label="Crew" value={vehicle.type.crew} />
+      <VehiclePropertyTag value={vehicle.type.weight} />
 
       {vehicle.type.specialRule && (
         <div className={styles.specialRule}>{vehicle.type.specialRule}</div>
