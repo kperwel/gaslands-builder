@@ -26,18 +26,20 @@ import styles from "./VehicleCard.module.css";
 import {
   ActiveWeapon,
   calculateActiveWeaponCost,
-  getNextFacing,
   isTurretMountedWeapon,
-  WeaponFacing,
   weaponTypes
 } from "./rules/weapons";
 import { assertNever } from "assert-never";
 import {
   ActiveVehicleUpgrade,
   calculateUpgradeQuantityLimit,
+  getNextExclusiveFacing,
+  getPossibleDirections,
+  isActiveVehicleUpgradeWithFacing,
   VehicleUpgrade,
   vehicleUpgrades
 } from "./rules/vehicleUpgrades";
+import { getNextFacing, WeaponFacing } from "./rules/facing";
 
 interface VehicleCardProps {
   vehicle: ActiveVehicle;
@@ -115,6 +117,8 @@ function canUpgradeBeAddedToVehicle(
       return (
         usedUpgrade.amount < calculateUpgradeQuantityLimit(upgrade, vehicle)
       );
+    case "singleEachFacing":
+      return getPossibleDirections(upgrade, vehicle.upgrades).length > 0;
     default:
       assertNever(upgrade.quantity);
   }
@@ -292,6 +296,9 @@ const VehicleCard: React.FC<VehicleCardProps> = ({
                         <td>
                           <Icon title="Upgrade" icon="asterisk" />
                         </td>
+                        <td>
+                          <Icon title="Arc of fire" icon="locate" />
+                        </td>
                         <td>&nbsp;</td>
                         <td>
                           <Icon title="Build Slots" icon="cog" />
@@ -303,96 +310,131 @@ const VehicleCard: React.FC<VehicleCardProps> = ({
                       </tr>
                     </thead>
                     <tbody>
-                      {vehicle.upgrades.map(
-                        ({ type, amount }, index: number) => (
-                          <tr key={type.abbreviation + index}>
-                            <td>
-                              {type.name + (amount > 1 ? ` (${amount}×)` : "")}
-                            </td>
-                            <td>{type.description}</td>
-                            <td title="Build Slots">{type.buildSlots}</td>
-                            <td title="Cost">{type.cost}</td>
-                            <td className={styles.tableCellControls}>
-                              {type.quantity === "unlimited" ||
-                              type.quantity === "limited" ? (
-                                <>
-                                  {(type.quantity === "unlimited" ||
-                                    (type.quantity === "limited" &&
-                                      amount <
-                                        calculateUpgradeQuantityLimit(
-                                          type,
-                                          vehicle
-                                        ))) && (
-                                    <>
-                                      <Icon
-                                        className={styles.actionIcon}
-                                        icon="add"
-                                        title="Add"
-                                        onClick={() => {
-                                          onUpdate({
-                                            ...vehicle,
-                                            upgrades: vehicle.upgrades.map(u =>
-                                              u.type === type
-                                                ? {
-                                                    type,
-                                                    amount: u.amount + 1
-                                                  }
-                                                : u
-                                            )
-                                          });
-                                        }}
-                                      />
-                                      <span>&nbsp;</span>
-                                    </>
-                                  )}
-                                  <Icon
-                                    className={styles.actionIcon}
-                                    icon="remove"
-                                    title="Remove"
-                                    onClick={() => {
-                                      onUpdate({
-                                        ...vehicle,
-                                        upgrades:
-                                          amount > 1
-                                            ? vehicle.upgrades.map(u =>
-                                                u.type === type
-                                                  ? {
-                                                      type,
-                                                      amount: u.amount - 1
-                                                    }
-                                                  : u
-                                              )
-                                            : vehicle.upgrades.filter(
-                                                (v, i) => i !== index
-                                              )
-                                      });
-                                    }}
-                                  />
-                                </>
-                              ) : (
-                                <Icon
+                      {vehicle.upgrades.map((upgrade, index: number) => (
+                        <tr key={upgrade.type.abbreviation + index}>
+                          <td>
+                            {upgrade.type.name +
+                              (upgrade.amount > 1
+                                ? ` (${upgrade.amount}×)`
+                                : "")}
+                          </td>
+                          <td>
+                            {isActiveVehicleUpgradeWithFacing(upgrade) &&
+                              upgrade.facing.type ===
+                                "WeaponFacingUserSelected" && (
+                                <div
                                   className={styles.actionIcon}
-                                  icon="delete"
-                                  title="Delete"
                                   onClick={() => {
                                     onUpdate({
                                       ...vehicle,
-                                      upgrades: vehicle.upgrades.filter(
-                                        (v, i) => i !== index
-                                      )
+                                      upgrades: vehicle.upgrades.map((u, i) => {
+                                        if (
+                                          i !== index ||
+                                          !isActiveVehicleUpgradeWithFacing(u)
+                                        ) {
+                                          return u;
+                                        }
+
+                                        return {
+                                          type: upgrade.type,
+                                          amount: upgrade.amount,
+                                          facing: getNextExclusiveFacing(
+                                            u,
+                                            vehicle.upgrades
+                                          )
+                                        };
+                                      })
+                                    });
+                                  }}
+                                >
+                                  {buildArcOfFireIcon(upgrade.facing)}
+                                </div>
+                              )}
+                          </td>
+                          <td>{upgrade.type.description}</td>
+                          <td title="Build Slots">{upgrade.type.buildSlots}</td>
+                          <td title="Cost">{upgrade.type.cost}</td>
+                          <td className={styles.tableCellControls}>
+                            {upgrade.type.quantity === "unlimited" ||
+                            upgrade.type.quantity === "limited" ? (
+                              <>
+                                {(upgrade.type.quantity === "unlimited" ||
+                                  (upgrade.type.quantity === "limited" &&
+                                    upgrade.amount <
+                                      calculateUpgradeQuantityLimit(
+                                        upgrade.type,
+                                        vehicle
+                                      ))) && (
+                                  <>
+                                    <Icon
+                                      className={styles.actionIcon}
+                                      icon="add"
+                                      title="Add"
+                                      onClick={() => {
+                                        onUpdate({
+                                          ...vehicle,
+                                          upgrades: vehicle.upgrades.map(u =>
+                                            u.type === upgrade.type
+                                              ? {
+                                                  type: upgrade.type,
+                                                  amount: u.amount + 1
+                                                }
+                                              : u
+                                          )
+                                        });
+                                      }}
+                                    />
+                                    <span>&nbsp;</span>
+                                  </>
+                                )}
+                                <Icon
+                                  className={styles.actionIcon}
+                                  icon="remove"
+                                  title="Remove"
+                                  onClick={() => {
+                                    onUpdate({
+                                      ...vehicle,
+                                      upgrades:
+                                        upgrade.amount > 1
+                                          ? vehicle.upgrades.map(u =>
+                                              u.type === upgrade.type
+                                                ? {
+                                                    type: upgrade.type,
+                                                    amount: u.amount - 1
+                                                  }
+                                                : u
+                                            )
+                                          : vehicle.upgrades.filter(
+                                              (v, i) => i !== index
+                                            )
                                     });
                                   }}
                                 />
-                              )}
-                            </td>
-                          </tr>
-                        )
-                      )}
+                              </>
+                            ) : (
+                              <Icon
+                                className={styles.actionIcon}
+                                icon="delete"
+                                title="Delete"
+                                onClick={() => {
+                                  onUpdate({
+                                    ...vehicle,
+                                    upgrades: vehicle.upgrades.filter(
+                                      (v, i) => i !== index
+                                    )
+                                  });
+                                }}
+                              />
+                            )}
+                          </td>
+                        </tr>
+                      ))}
                       {vehicle.weapons
                         .filter(isTurretMountedWeapon)
                         .map(({ type }, index) => (
                           <tr key={type.abbreviation + index}>
                             <td>{"Turret mounting for " + type.name}</td>
+                            <td>&nbsp;</td>
                             <td>See weapons</td>
                             <td title="Build Slots"></td>
                             <td title="Cost">3× weapon cost</td>
@@ -416,16 +458,34 @@ const VehicleCard: React.FC<VehicleCardProps> = ({
                             const currentUpgrade = vehicle.upgrades.find(
                               u => u.type === upgrade
                             );
-                            const upgrades: ActiveVehicleUpgrade[] = currentUpgrade
-                              ? vehicle.upgrades.map(({ type, amount }) =>
-                                  type === upgrade
-                                    ? { type, amount: amount + 1 }
-                                    : { type, amount }
-                                )
-                              : [
-                                  ...vehicle.upgrades,
-                                  { type: upgrade, amount: 1 }
-                                ];
+
+                            const hasConfigurableFacing =
+                              "configurableFacing" in upgrade;
+
+                            const upgrades: ActiveVehicleUpgrade[] =
+                              currentUpgrade && !hasConfigurableFacing
+                                ? vehicle.upgrades.map(u =>
+                                    u.type === upgrade
+                                      ? { ...u, amount: u.amount + 1 }
+                                      : u
+                                  )
+                                : [
+                                    ...vehicle.upgrades,
+                                    hasConfigurableFacing
+                                      ? {
+                                          type: upgrade,
+                                          amount: 1,
+                                          facing: {
+                                            type: "WeaponFacingUserSelected",
+                                            direction: getPossibleDirections(
+                                              upgrade,
+                                              vehicle.upgrades
+                                            )[0]
+                                          }
+                                        }
+                                      : { type: upgrade, amount: 1 }
+                                  ];
+
                             onUpdate({
                               ...vehicle,
                               upgrades

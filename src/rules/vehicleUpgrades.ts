@@ -1,4 +1,5 @@
 import { ActiveVehicle } from "./vehicles";
+import { WeaponFacing, WeaponFacingDirection } from "./facing";
 
 interface BaseUpgradeEffect<T extends string> {
   type: T;
@@ -25,9 +26,13 @@ export type VehicleUpgradeEffect =
   | MaxGearUpgradeEffect
   | HandlingUpgradeEffect;
 
-export type UpgradeQuantity = "single" | "limited" | "unlimited";
+export type UpgradeQuantity =
+  | "single"
+  | "limited"
+  | "unlimited"
+  | "singleEachFacing";
 
-export interface VehicleUpgrade {
+interface VehicleUpgradeWithoutFacing {
   name: string;
   abbreviation: string;
   description: string;
@@ -36,6 +41,14 @@ export interface VehicleUpgrade {
   cost: number;
   quantity: UpgradeQuantity;
 }
+
+interface VehicleUpgradeWithFacing extends VehicleUpgradeWithoutFacing {
+  configurableFacing: boolean;
+}
+
+export type VehicleUpgrade =
+  | VehicleUpgradeWithoutFacing
+  | VehicleUpgradeWithFacing;
 
 export const vehicleUpgrades: VehicleUpgrade[] = [
   {
@@ -116,8 +129,18 @@ export const vehicleUpgrades: VehicleUpgrade[] = [
     buildSlots: 1,
     cost: 4,
     quantity: "single"
+  },
+  {
+    name: "Ram",
+    abbreviation: "r",
+    description:
+      "In a collision on declared face add 2 attack dice to smash attack and do not gain any hazard tokens",
+    effects: [],
+    buildSlots: 1,
+    cost: 4,
+    quantity: "singleEachFacing",
+    configurableFacing: true
   }
-  // TODO: Ram
   // TODO: Exploding Ram
 ];
 
@@ -136,7 +159,63 @@ export function calculateUpgradeQuantityLimit(
   );
 }
 
-export interface ActiveVehicleUpgrade {
-  type: VehicleUpgrade;
+interface ActiveVehicleUpgradeWithoutFacing {
+  type: VehicleUpgradeWithoutFacing;
   amount: number;
+}
+
+interface ActiveVehicleUpgradeWithFacing {
+  type: VehicleUpgradeWithFacing;
+  amount: number;
+  facing: WeaponFacing;
+}
+
+export type ActiveVehicleUpgrade =
+  | ActiveVehicleUpgradeWithoutFacing
+  | ActiveVehicleUpgradeWithFacing;
+
+export function isActiveVehicleUpgradeWithFacing(
+  upgrade: ActiveVehicleUpgrade
+): upgrade is ActiveVehicleUpgradeWithFacing {
+  return "facing" in upgrade && "configurableFacing" in upgrade.type;
+}
+
+export function getPossibleDirections(
+  upgradeType: VehicleUpgrade,
+  activeUpgrades: ActiveVehicleUpgrade[]
+): WeaponFacingDirection[] {
+  const activeFacings: WeaponFacingDirection[] = activeUpgrades.flatMap(u =>
+    u.type === upgradeType && isActiveVehicleUpgradeWithFacing(u)
+      ? [u.facing.direction]
+      : []
+  );
+
+  const potentialDirections: WeaponFacingDirection[] = [
+    "front",
+    "rear",
+    "side"
+  ];
+  return potentialDirections.filter(
+    direction => !activeFacings.includes(direction)
+  );
+}
+
+export function getNextExclusiveFacing(
+  currentUpgrade: ActiveVehicleUpgradeWithFacing,
+  activeUpgrades: ActiveVehicleUpgrade[]
+): WeaponFacing {
+  const possibleDirections = getPossibleDirections(
+    currentUpgrade.type,
+    activeUpgrades
+  );
+  const currentIndex = possibleDirections.indexOf(
+    currentUpgrade.facing.direction
+  );
+  const direction =
+    possibleDirections[(currentIndex + 1) % possibleDirections.length];
+
+  return {
+    type: "WeaponFacingUserSelected",
+    direction
+  };
 }

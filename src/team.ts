@@ -3,8 +3,16 @@ import {
   calculateTotalCost,
   vehicleTypes
 } from "./rules/vehicles";
-import { weaponFacingStringIsomorphism, weaponTypes } from "./rules/weapons";
-import { ActiveVehicleUpgrade, vehicleUpgrades } from "./rules/vehicleUpgrades";
+import { weaponTypes } from "./rules/weapons";
+import {
+  ActiveVehicleUpgrade,
+  isActiveVehicleUpgradeWithFacing,
+  vehicleUpgrades
+} from "./rules/vehicleUpgrades";
+import {
+  WeaponFacingDirection,
+  weaponFacingStringIsomorphism
+} from "./rules/facing";
 
 export interface Team {
   name: string;
@@ -19,7 +27,8 @@ type UpgradeTypeAbbreviaiton = string;
 type UpgradeAmount = number;
 type CondensedActiveUpgrade =
   | [UpgradeTypeAbbreviaiton]
-  | [UpgradeTypeAbbreviaiton, UpgradeAmount];
+  | [UpgradeTypeAbbreviaiton, UpgradeAmount]
+  | [UpgradeTypeAbbreviaiton, UpgradeAmount, WeaponFacingDirection];
 
 type CondensedActiveVehicle = [
   VehicleTypeAbbreviation,
@@ -83,11 +92,26 @@ export const teamCondensationIsomorphism = {
             );
 
             const upgrades: ActiveVehicleUpgrade[] = condensedUpgrades.flatMap(
-              ([typeAbbreviation, amount = 1]) => {
+              ([typeAbbreviation, amount = 1, facingDirection]) => {
                 const type = vehicleUpgrades.find(
                   u => u.abbreviation === typeAbbreviation
                 );
-                return type ? [{ type, amount }] : [];
+                if (!type) {
+                  return [];
+                }
+
+                return "configurableFacing" in type
+                  ? [
+                      {
+                        type,
+                        amount,
+                        facing: {
+                          type: "WeaponFacingUserSelected",
+                          direction: facingDirection || "front"
+                        }
+                      }
+                    ]
+                  : [{ type, amount }];
               }
             );
 
@@ -118,10 +142,15 @@ export const teamCondensationIsomorphism = {
               weaponFacingStringIsomorphism.to(facing)
             ]
           ),
-          v.upgrades.map(({ type: { abbreviation }, amount }) => [
-            abbreviation,
-            amount
-          ])
+          v.upgrades.map(upgrade => {
+            const {
+              type: { abbreviation },
+              amount
+            } = upgrade;
+            return isActiveVehicleUpgradeWithFacing(upgrade)
+              ? [abbreviation, amount, upgrade.facing.direction]
+              : [abbreviation, amount];
+          })
         ]
       )
     };
