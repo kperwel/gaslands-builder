@@ -140,8 +140,18 @@ export const vehicleUpgrades: VehicleUpgrade[] = [
     cost: 4,
     quantity: "singleEachFacing",
     configurableFacing: true
+  },
+  {
+    name: "Exploding Ram",
+    abbreviation: "er",
+    description:
+      "In first collision on declared face must declare smash attack with +6 W6, loose one hull point for every 1 or 2 rolled.",
+    effects: [],
+    buildSlots: 0,
+    cost: 3,
+    quantity: "singleEachFacing",
+    configurableFacing: true
   }
-  // TODO: Exploding Ram
 ];
 
 export const vehicleUpgradeLimitCalculators: {
@@ -212,7 +222,9 @@ export function getNextExclusiveFacing(
     currentUpgrade.facing.direction
   );
   const direction =
-    possibleDirections[(currentIndex + 1) % possibleDirections.length];
+    possibleDirections.length > 0
+      ? possibleDirections[(currentIndex + 1) % possibleDirections.length]
+      : currentUpgrade.facing.direction;
 
   return {
     type: "WeaponFacingUserSelected",
