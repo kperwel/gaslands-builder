@@ -1,7 +1,7 @@
 import React from "react";
 import styles from "./App.module.css";
 import { ActiveVehicle, vehicleTypes } from "./rules/vehicles";
-import VehicleCard from "./VehicleCard";
+import { VehicleCard } from "./VehicleCard";
 import {
   Button,
   EditableText,
