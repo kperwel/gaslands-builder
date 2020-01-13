@@ -102,7 +102,6 @@ export const vehicleUpgrades: VehicleUpgrade[] = [
     quantity: "single"
   },
   {
-    // TODO: automatically added for free for buggy
     name: "Roll Cage",
     abbreviation: "rc",
     description: "Ignore 2 hits from flip",
@@ -230,4 +229,31 @@ export function getNextExclusiveFacing(
     type: "WeaponFacingUserSelected",
     direction
   };
+}
+
+export function addUpgradeToVehicleUpgrades(
+  vehicleUpgrades: ActiveVehicleUpgrade[],
+  upgrade: VehicleUpgrade
+): ActiveVehicleUpgrade[] {
+  const currentUpgrade = vehicleUpgrades.find(u => u.type === upgrade);
+
+  const hasConfigurableFacing = "configurableFacing" in upgrade;
+
+  return currentUpgrade && !hasConfigurableFacing
+    ? vehicleUpgrades.map(u =>
+        u.type === upgrade ? { ...u, amount: u.amount + 1 } : u
+      )
+    : [
+        ...vehicleUpgrades,
+        hasConfigurableFacing
+          ? {
+              type: upgrade,
+              amount: 1,
+              facing: {
+                type: "WeaponFacingUserSelected",
+                direction: getPossibleDirections(upgrade, vehicleUpgrades)[0]
+              }
+            }
+          : { type: upgrade, amount: 1 }
+      ];
 }

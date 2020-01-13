@@ -32,6 +32,7 @@ import {
 import { assertNever } from "assert-never";
 import {
   ActiveVehicleUpgrade,
+  addUpgradeToVehicleUpgrades,
   calculateUpgradeQuantityLimit,
   getNextExclusiveFacing,
   getPossibleDirections,
@@ -122,6 +123,13 @@ function canUpgradeBeAddedToVehicle(
     default:
       assertNever(upgrade.quantity);
   }
+}
+
+function isUpgradeIncluded(
+  vehicle: ActiveVehicle,
+  upgrade: ActiveVehicleUpgrade
+): boolean {
+  return vehicle.type.includedUpgrades.includes(upgrade.type.name);
 }
 
 const VehicleCard: React.FC<VehicleCardProps> = ({
@@ -353,7 +361,11 @@ const VehicleCard: React.FC<VehicleCardProps> = ({
                           </td>
                           <td>{upgrade.type.description}</td>
                           <td title="Build Slots">{upgrade.type.buildSlots}</td>
-                          <td title="Cost">{upgrade.type.cost}</td>
+                          <td title="Cost">
+                            {isUpgradeIncluded(vehicle, upgrade)
+                              ? "FREE"
+                              : upgrade.type.cost}
+                          </td>
                           <td className={styles.tableCellControls}>
                             {upgrade.type.quantity === "unlimited" ||
                             upgrade.type.quantity === "limited" ? (
@@ -411,7 +423,7 @@ const VehicleCard: React.FC<VehicleCardProps> = ({
                                   }}
                                 />
                               </>
-                            ) : (
+                            ) : !isUpgradeIncluded(vehicle, upgrade) ? (
                               <Icon
                                 className={styles.actionIcon}
                                 icon="delete"
@@ -425,6 +437,8 @@ const VehicleCard: React.FC<VehicleCardProps> = ({
                                   });
                                 }}
                               />
+                            ) : (
+                              ""
                             )}
                           </td>
                         </tr>
@@ -455,40 +469,12 @@ const VehicleCard: React.FC<VehicleCardProps> = ({
                             !canUpgradeBeAddedToVehicle(upgrade, vehicle)
                           }
                           onClick={() => {
-                            const currentUpgrade = vehicle.upgrades.find(
-                              u => u.type === upgrade
-                            );
-
-                            const hasConfigurableFacing =
-                              "configurableFacing" in upgrade;
-
-                            const upgrades: ActiveVehicleUpgrade[] =
-                              currentUpgrade && !hasConfigurableFacing
-                                ? vehicle.upgrades.map(u =>
-                                    u.type === upgrade
-                                      ? { ...u, amount: u.amount + 1 }
-                                      : u
-                                  )
-                                : [
-                                    ...vehicle.upgrades,
-                                    hasConfigurableFacing
-                                      ? {
-                                          type: upgrade,
-                                          amount: 1,
-                                          facing: {
-                                            type: "WeaponFacingUserSelected",
-                                            direction: getPossibleDirections(
-                                              upgrade,
-                                              vehicle.upgrades
-                                            )[0]
-                                          }
-                                        }
-                                      : { type: upgrade, amount: 1 }
-                                  ];
-
                             onUpdate({
                               ...vehicle,
-                              upgrades
+                              upgrades: addUpgradeToVehicleUpgrades(
+                                vehicle.upgrades,
+                                upgrade
+                              )
                             });
                           }}
                         ></Menu.Item>

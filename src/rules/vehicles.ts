@@ -13,6 +13,7 @@ export interface VehicleType {
   crew: number;
   buildSlots: number;
   cost: number;
+  includedUpgrades: string[];
   specialRule?: string;
 }
 
@@ -27,6 +28,7 @@ export const vehicleTypes: VehicleType[] = [
     crew: 2,
     buildSlots: 2,
     cost: 6,
+    includedUpgrades: ["Roll Cage"],
     specialRule: "Roll Cage"
   },
   {
@@ -38,7 +40,8 @@ export const vehicleTypes: VehicleType[] = [
     maxGear: 5,
     crew: 2,
     buildSlots: 2,
-    cost: 12
+    cost: 12,
+    includedUpgrades: []
   },
   {
     name: "Performance Car",
@@ -50,6 +53,7 @@ export const vehicleTypes: VehicleType[] = [
     crew: 1,
     buildSlots: 2,
     cost: 15,
+    includedUpgrades: [],
     specialRule: "Slip Away"
   },
   {
@@ -61,7 +65,8 @@ export const vehicleTypes: VehicleType[] = [
     maxGear: 4,
     crew: 3,
     buildSlots: 3,
-    cost: 15
+    cost: 15,
+    includedUpgrades: []
   },
   {
     name: "Heavy Truck",
@@ -72,7 +77,8 @@ export const vehicleTypes: VehicleType[] = [
     maxGear: 3,
     crew: 4,
     buildSlots: 5,
-    cost: 25
+    cost: 25,
+    includedUpgrades: []
   },
   {
     name: "Bus",
@@ -83,7 +89,8 @@ export const vehicleTypes: VehicleType[] = [
     maxGear: 3,
     crew: 8,
     buildSlots: 3,
-    cost: 30
+    cost: 30,
+    includedUpgrades: []
   }
 ];
 
@@ -104,7 +111,11 @@ export function calculateTotalCost({
       (acc, weapon) => acc + calculateActiveWeaponCost(weapon),
       0
     ) +
-    upgrades.reduce((acc, { type: { cost }, amount }) => acc + amount * cost, 0)
+    upgrades
+      .filter(({ type: { name } }) => {
+        return !type.includedUpgrades.includes(name);
+      })
+      .reduce((acc, { type: { cost }, amount }) => acc + amount * cost, 0)
   );
 }
 

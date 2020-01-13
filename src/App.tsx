@@ -18,6 +18,11 @@ import {
   INITIAL_TEAM,
   teamCondensationIsomorphism
 } from "./team";
+import {
+  ActiveVehicleUpgrade,
+  addUpgradeToVehicleUpgrades,
+  vehicleUpgrades
+} from "./rules/vehicleUpgrades";
 
 const App: React.FC = (): React.ReactElement => {
   const [team, dispatchTeamAction] = useQueryStringReducer(
@@ -67,7 +72,7 @@ const App: React.FC = (): React.ReactElement => {
                   <Menu.Item
                     key={type.name}
                     text={type.name}
-                    onClick={() =>
+                    onClick={() => {
                       addVehicle({
                         type,
                         weapons: defaultWeaponTypes.map(type => ({
@@ -82,9 +87,19 @@ const App: React.FC = (): React.ReactElement => {
                                 direction: "front"
                               }
                         })),
-                        upgrades: []
-                      })
-                    }
+                        upgrades: type.includedUpgrades.reduce(
+                          (acc, upgrade) => {
+                            const upgradeType = vehicleUpgrades.find(
+                              u => u.name === upgrade
+                            );
+                            return upgradeType
+                              ? addUpgradeToVehicleUpgrades(acc, upgradeType)
+                              : acc;
+                          },
+                          [] as ActiveVehicleUpgrade[]
+                        )
+                      });
+                    }}
                   ></Menu.Item>
                 ))}
               </Menu>
