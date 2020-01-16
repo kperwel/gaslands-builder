@@ -55,8 +55,8 @@ export const WeaponsPanel: React.FC<WeaponsPanelProps> = ({
         <tbody>
           {vehicle.weapons.map(
             ({ type, facing }: ActiveWeapon, index: number) => (
-              <>
-                <tr key={type.abbreviation + index}>
+              <React.Fragment key={type.abbreviation + index}>
+                <tr>
                   <td rowSpan={type.description || type.ammo ? 2 : 1}>
                     {type.name}
                   </td>
@@ -117,7 +117,7 @@ export const WeaponsPanel: React.FC<WeaponsPanelProps> = ({
                     </td>
                   </tr>
                 )}
-              </>
+              </React.Fragment>
             )
           )}
         </tbody>

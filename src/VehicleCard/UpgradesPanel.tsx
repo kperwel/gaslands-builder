@@ -89,8 +89,8 @@ export const UpgradesPanel: React.FC<UpgradesPanelProps> = ({
           </thead>
           <tbody>
             {vehicle.upgrades.map((upgrade, index: number) => (
-              <>
-                <tr key={upgrade.type.abbreviation + index}>
+              <React.Fragment key={upgrade.type.abbreviation + index}>
+                <tr>
                   <td rowSpan={upgrade.type.description ? 2 : 1}>
                     {upgrade.type.name +
                       (upgrade.amount > 1 ? ` (${upgrade.amount}×)` : "")}
@@ -216,25 +216,25 @@ export const UpgradesPanel: React.FC<UpgradesPanelProps> = ({
                     </td>
                   </tr>
                 )}
-              </>
+              </React.Fragment>
             ))}
             {vehicle.weapons
               .filter(isTurretMountedWeapon)
               .map(({ type }, index) => (
-                <>
-                  <tr key={type.abbreviation + index}>
+                <React.Fragment key={type.abbreviation + index}>
+                  <tr>
                     <td rowSpan={2}>{"Turret mounting for " + type.name}</td>
                     <td>&nbsp;</td>
                     <td title="Build Slots"></td>
                     <td title="Cost">3× weapon cost</td>
                     <td>&nbsp;</td>
                   </tr>
-                  <tr key={type.abbreviation + index + "d"}>
+                  <tr>
                     <td className={styles.secondaryTableCell} colSpan={4}>
                       See weapons
                     </td>
                   </tr>
-                </>
+                </React.Fragment>
               ))}
           </tbody>
         </HTMLTable>
