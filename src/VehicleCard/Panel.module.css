@@ -6,3 +6,9 @@
   white-space: pre;
   text-align: right !important;
 }
+
+.secondaryTableCell {
+  padding-top: 4px !important;
+  font-size: 0.8em;
+  font-style: italic;
+}

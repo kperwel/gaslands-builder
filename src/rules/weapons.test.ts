@@ -6,7 +6,7 @@ describe("weapons", () => {
       const weaponTypesWithSameAbbreviation = weaponTypes.filter(
         t => t.abbreviation === type.abbreviation
       );
-      expect(weaponTypesWithSameAbbreviation.length).toBe(1);
+      expect(weaponTypesWithSameAbbreviation).toEqual([type]);
     });
   });
 });

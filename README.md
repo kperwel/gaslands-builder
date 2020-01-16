@@ -2,8 +2,7 @@
 
 ## TODO
 
-- Add sponsors & perks
-- Add advanced weapons
-- Add advanced upgrades
 - Improve UI
 - Add print CSS
+- Add sponsors & perks
+- Add Mishkin upgrade & weapons

@@ -3,7 +3,8 @@ import { assertNever } from "assert-never";
 type WeaponFacingType =
   | "WeaponFacingUserSelected"
   | "WeaponFacingTurretMounted"
-  | "WeaponFacingCrewFired";
+  | "WeaponFacingCrewFired"
+  | "WeaponFacingDropped";
 export type WeaponFacingDirection = "front" | "rear" | "side" | "360°";
 
 interface WeaponFacingBase<
@@ -23,15 +24,20 @@ interface WeaponFacingTurretMounted
 interface WeaponFacingCrewFired
   extends WeaponFacingBase<"WeaponFacingCrewFired", "360°"> {}
 
+interface WeaponFacingDropped
+  extends WeaponFacingBase<"WeaponFacingDropped", "360°"> {}
+
 export type WeaponFacing =
   | WeaponFacingUserSelected
   | WeaponFacingTurretMounted
-  | WeaponFacingCrewFired;
+  | WeaponFacingCrewFired
+  | WeaponFacingDropped;
 
 const weaponFacingTypeAbbreviations: { [key: string]: WeaponFacingType } = {
   u: "WeaponFacingUserSelected",
   t: "WeaponFacingTurretMounted",
-  c: "WeaponFacingCrewFired"
+  c: "WeaponFacingCrewFired",
+  d: "WeaponFacingDropped"
 };
 
 const weaponFacingDirectionAbbreviations: {
@@ -64,6 +70,7 @@ export const weaponFacingStringIsomorphism = {
         return typeAbbreviation + ":" + directionAbbreviation;
       case "WeaponFacingTurretMounted":
       case "WeaponFacingCrewFired":
+      case "WeaponFacingDropped":
         return typeAbbreviation;
       default:
         assertNever(type);
@@ -84,6 +91,7 @@ export const weaponFacingStringIsomorphism = {
         };
       case "WeaponFacingTurretMounted":
       case "WeaponFacingCrewFired":
+      case "WeaponFacingDropped":
         return {
           type,
           direction: "360°"
@@ -105,6 +113,7 @@ export function getNextFacing({ type, direction }: WeaponFacing): WeaponFacing {
       };
     case "WeaponFacingTurretMounted":
     case "WeaponFacingCrewFired":
+    case "WeaponFacingDropped":
       return { type, direction: "360°" };
     default:
       assertNever(type);

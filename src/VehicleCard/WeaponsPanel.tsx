@@ -14,7 +14,7 @@ import {
   weaponTypes
 } from "../rules/weapons";
 import { ArcOfFireIcon } from "./ArcOfFireIcon";
-import styles from "./WeaponsPanel.module.css";
+import styles from "./Panel.module.css";
 import { getNextFacing } from "../rules/facing";
 
 interface WeaponsPanelProps {
@@ -55,54 +55,69 @@ export const WeaponsPanel: React.FC<WeaponsPanelProps> = ({
         <tbody>
           {vehicle.weapons.map(
             ({ type, facing }: ActiveWeapon, index: number) => (
-              <tr key={type.abbreviation + index}>
-                <td>{type.name}</td>
-                <td>
-                  {facing.type !== "WeaponFacingUserSelected" ? (
-                    <ArcOfFireIcon facing={facing} />
-                  ) : (
-                    <div
-                      className={styles.actionIcon}
-                      onClick={() => {
-                        onUpdate({
-                          ...vehicle,
-                          weapons: vehicle.weapons.map((w, i) => {
-                            if (i !== index) {
-                              return w;
-                            }
-                            return {
-                              type: w.type,
-                              facing: getNextFacing(w.facing)
-                            };
-                          })
-                        });
-                      }}
-                    >
+              <>
+                <tr key={type.abbreviation + index}>
+                  <td rowSpan={type.description || type.ammo ? 2 : 1}>
+                    {type.name}
+                  </td>
+                  <td>
+                    {facing.type !== "WeaponFacingUserSelected" ? (
                       <ArcOfFireIcon facing={facing} />
-                    </div>
-                  )}
-                </td>
-                <td title="Range">{type.range}</td>
-                <td title="Attack Dice">{type.attackDice}D6</td>
-                <td title="Build Slots">{type.buildSlots}</td>
-                <td title="Cost">
-                  {calculateActiveWeaponCost({ type, facing })}
-                </td>
-                <td>
-                  {!type.isDefault && (
-                    <Icon
-                      className={styles.actionIcon}
-                      icon="delete"
-                      onClick={() => {
-                        onUpdate({
-                          ...vehicle,
-                          weapons: vehicle.weapons.filter((v, i) => i !== index)
-                        });
-                      }}
-                    />
-                  )}
-                </td>
-              </tr>
+                    ) : (
+                      <div
+                        className={styles.actionIcon}
+                        onClick={() => {
+                          onUpdate({
+                            ...vehicle,
+                            weapons: vehicle.weapons.map((w, i) => {
+                              if (i !== index) {
+                                return w;
+                              }
+                              return {
+                                type: w.type,
+                                facing: getNextFacing(w.facing)
+                              };
+                            })
+                          });
+                        }}
+                      >
+                        <ArcOfFireIcon facing={facing} />
+                      </div>
+                    )}
+                  </td>
+                  <td title="Range">{type.range}</td>
+                  <td title="Attack Dice">{type.attackDice}D6</td>
+                  <td title="Build Slots">{type.buildSlots}</td>
+                  <td title="Cost">
+                    {calculateActiveWeaponCost({ type, facing })}
+                  </td>
+                  <td>
+                    {!type.isDefault && (
+                      <Icon
+                        className={styles.actionIcon}
+                        icon="delete"
+                        onClick={() => {
+                          onUpdate({
+                            ...vehicle,
+                            weapons: vehicle.weapons.filter(
+                              (v, i) => i !== index
+                            )
+                          });
+                        }}
+                      />
+                    )}
+                  </td>
+                </tr>
+                {(type.description || type.ammo) && (
+                  <tr key={type.abbreviation + index + "d"}>
+                    <td colSpan={6} className={styles.secondaryTableCell}>
+                      {[type.ammo ? `Ammo ${type.ammo}` : "", type.description]
+                        .filter(s => s && s.length > 0)
+                        .join(", ")}
+                    </td>
+                  </tr>
+                )}
+              </>
             )
           )}
         </tbody>
@@ -126,6 +141,11 @@ export const WeaponsPanel: React.FC<WeaponsPanelProps> = ({
                           facing: weapon.isCrewFired
                             ? {
                                 type: "WeaponFacingCrewFired",
+                                direction: "360°"
+                              }
+                            : weapon.range === "Dropped"
+                            ? {
+                                type: "WeaponFacingDropped",
                                 direction: "360°"
                               }
                             : {

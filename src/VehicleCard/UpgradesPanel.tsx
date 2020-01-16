@@ -9,7 +9,7 @@ import {
 } from "@blueprintjs/core";
 import * as React from "react";
 import { ArcOfFireIcon } from "./ArcOfFireIcon";
-import styles from "./WeaponsPanel.module.css";
+import styles from "./Panel.module.css";
 import {
   ActiveVehicleUpgrade,
   addUpgradeToVehicleUpgrades,
@@ -78,7 +78,6 @@ export const UpgradesPanel: React.FC<UpgradesPanelProps> = ({
               <td>
                 <Icon title="Arc of fire" icon="locate" />
               </td>
-              <td>&nbsp;</td>
               <td>
                 <Icon title="Build Slots" icon="cog" />
               </td>
@@ -90,136 +89,152 @@ export const UpgradesPanel: React.FC<UpgradesPanelProps> = ({
           </thead>
           <tbody>
             {vehicle.upgrades.map((upgrade, index: number) => (
-              <tr key={upgrade.type.abbreviation + index}>
-                <td>
-                  {upgrade.type.name +
-                    (upgrade.amount > 1 ? ` (${upgrade.amount}×)` : "")}
-                </td>
-                <td>
-                  {isActiveVehicleUpgradeWithFacing(upgrade) &&
-                    upgrade.facing.type === "WeaponFacingUserSelected" && (
-                      <div
-                        className={styles.actionIcon}
-                        onClick={() => {
-                          onUpdate({
-                            ...vehicle,
-                            upgrades: vehicle.upgrades.map((u, i) => {
-                              if (
-                                i !== index ||
-                                !isActiveVehicleUpgradeWithFacing(u)
-                              ) {
-                                return u;
-                              }
+              <>
+                <tr key={upgrade.type.abbreviation + index}>
+                  <td rowSpan={upgrade.type.description ? 2 : 1}>
+                    {upgrade.type.name +
+                      (upgrade.amount > 1 ? ` (${upgrade.amount}×)` : "")}
+                  </td>
+                  <td>
+                    {isActiveVehicleUpgradeWithFacing(upgrade) &&
+                      upgrade.facing.type === "WeaponFacingUserSelected" && (
+                        <div
+                          className={styles.actionIcon}
+                          onClick={() => {
+                            onUpdate({
+                              ...vehicle,
+                              upgrades: vehicle.upgrades.map((u, i) => {
+                                if (
+                                  i !== index ||
+                                  !isActiveVehicleUpgradeWithFacing(u)
+                                ) {
+                                  return u;
+                                }
 
-                              return {
-                                type: upgrade.type,
-                                amount: upgrade.amount,
-                                facing: getNextExclusiveFacing(
-                                  u,
-                                  vehicle.upgrades
-                                )
-                              };
-                            })
-                          });
-                        }}
-                      >
-                        <ArcOfFireIcon facing={upgrade.facing} />
-                      </div>
-                    )}
-                </td>
-                <td>{upgrade.type.description}</td>
-                <td title="Build Slots">{upgrade.type.buildSlots}</td>
-                <td title="Cost">
-                  {isUpgradeIncluded(vehicle, upgrade)
-                    ? "FREE"
-                    : upgrade.type.cost}
-                </td>
-                <td className={styles.tableCellControls}>
-                  {upgrade.type.quantity === "unlimited" ||
-                  upgrade.type.quantity === "limited" ? (
-                    <>
-                      {(upgrade.type.quantity === "unlimited" ||
-                        (upgrade.type.quantity === "limited" &&
-                          upgrade.amount <
-                            calculateUpgradeQuantityLimit(
-                              upgrade.type,
-                              vehicle
-                            ))) && (
-                        <>
-                          <Icon
-                            className={styles.actionIcon}
-                            icon="add"
-                            title="Add"
-                            onClick={() => {
-                              onUpdate({
-                                ...vehicle,
-                                upgrades: vehicle.upgrades.map(u =>
-                                  u.type === upgrade.type
-                                    ? {
-                                        type: upgrade.type,
-                                        amount: u.amount + 1
-                                      }
-                                    : u
-                                )
-                              });
-                            }}
-                          />
-                          <span>&nbsp;</span>
-                        </>
+                                return {
+                                  type: upgrade.type,
+                                  amount: upgrade.amount,
+                                  facing: getNextExclusiveFacing(
+                                    u,
+                                    vehicle.upgrades
+                                  )
+                                };
+                              })
+                            });
+                          }}
+                        >
+                          <ArcOfFireIcon facing={upgrade.facing} />
+                        </div>
                       )}
-                      <Icon
-                        className={styles.actionIcon}
-                        icon="remove"
-                        title="Remove"
-                        onClick={() => {
-                          onUpdate({
-                            ...vehicle,
-                            upgrades:
-                              upgrade.amount > 1
-                                ? vehicle.upgrades.map(u =>
+                  </td>
+                  <td title="Build Slots">{upgrade.type.buildSlots}</td>
+                  <td title="Cost">
+                    {isUpgradeIncluded(vehicle, upgrade)
+                      ? "FREE"
+                      : upgrade.type.cost}
+                  </td>
+                  <td className={styles.tableCellControls}>
+                    {upgrade.type.quantity === "unlimited" ||
+                    upgrade.type.quantity === "limited" ? (
+                      <>
+                        {(upgrade.type.quantity === "unlimited" ||
+                          (upgrade.type.quantity === "limited" &&
+                            upgrade.amount <
+                              calculateUpgradeQuantityLimit(
+                                upgrade.type,
+                                vehicle
+                              ))) && (
+                          <>
+                            <Icon
+                              className={styles.actionIcon}
+                              icon="add"
+                              title="Add"
+                              onClick={() => {
+                                onUpdate({
+                                  ...vehicle,
+                                  upgrades: vehicle.upgrades.map(u =>
                                     u.type === upgrade.type
                                       ? {
                                           type: upgrade.type,
-                                          amount: u.amount - 1
+                                          amount: u.amount + 1
                                         }
                                       : u
                                   )
-                                : vehicle.upgrades.filter((v, i) => i !== index)
+                                });
+                              }}
+                            />
+                            <span>&nbsp;</span>
+                          </>
+                        )}
+                        <Icon
+                          className={styles.actionIcon}
+                          icon="remove"
+                          title="Remove"
+                          onClick={() => {
+                            onUpdate({
+                              ...vehicle,
+                              upgrades:
+                                upgrade.amount > 1
+                                  ? vehicle.upgrades.map(u =>
+                                      u.type === upgrade.type
+                                        ? {
+                                            type: upgrade.type,
+                                            amount: u.amount - 1
+                                          }
+                                        : u
+                                    )
+                                  : vehicle.upgrades.filter(
+                                      (v, i) => i !== index
+                                    )
+                            });
+                          }}
+                        />
+                      </>
+                    ) : !isUpgradeIncluded(vehicle, upgrade) ? (
+                      <Icon
+                        className={styles.actionIcon}
+                        icon="delete"
+                        title="Delete"
+                        onClick={() => {
+                          onUpdate({
+                            ...vehicle,
+                            upgrades: vehicle.upgrades.filter(
+                              (v, i) => i !== index
+                            )
                           });
                         }}
                       />
-                    </>
-                  ) : !isUpgradeIncluded(vehicle, upgrade) ? (
-                    <Icon
-                      className={styles.actionIcon}
-                      icon="delete"
-                      title="Delete"
-                      onClick={() => {
-                        onUpdate({
-                          ...vehicle,
-                          upgrades: vehicle.upgrades.filter(
-                            (v, i) => i !== index
-                          )
-                        });
-                      }}
-                    />
-                  ) : (
-                    ""
-                  )}
-                </td>
-              </tr>
+                    ) : (
+                      ""
+                    )}
+                  </td>
+                </tr>
+                {upgrade.type.description && (
+                  <tr>
+                    <td className={styles.secondaryTableCell} colSpan={4}>
+                      {upgrade.type.description}
+                    </td>
+                  </tr>
+                )}
+              </>
             ))}
             {vehicle.weapons
               .filter(isTurretMountedWeapon)
               .map(({ type }, index) => (
-                <tr key={type.abbreviation + index}>
-                  <td>{"Turret mounting for " + type.name}</td>
-                  <td>&nbsp;</td>
-                  <td>See weapons</td>
-                  <td title="Build Slots"></td>
-                  <td title="Cost">3× weapon cost</td>
-                  <td>&nbsp;</td>
-                </tr>
+                <>
+                  <tr key={type.abbreviation + index}>
+                    <td rowSpan={2}>{"Turret mounting for " + type.name}</td>
+                    <td>&nbsp;</td>
+                    <td title="Build Slots"></td>
+                    <td title="Cost">3× weapon cost</td>
+                    <td>&nbsp;</td>
+                  </tr>
+                  <tr key={type.abbreviation + index + "d"}>
+                    <td className={styles.secondaryTableCell} colSpan={4}>
+                      See weapons
+                    </td>
+                  </tr>
+                </>
               ))}
           </tbody>
         </HTMLTable>
