@@ -13,6 +13,7 @@ import {
   WeaponFacingDirection,
   weaponFacingStringIsomorphism
 } from "./rules/facing";
+import urlon from "urlon";
 
 export interface Team {
   name: string;
@@ -50,12 +51,23 @@ export function calculateTotalTeamCost(team: Team) {
   );
 }
 
+function parseQueryString(queryString: string) {
+  try {
+    return urlon.parse(decodeURIComponent(queryString));
+  } catch (e) {
+    console.warn("Unable to parse querystring as urlon");
+  }
+  try {
+    return JSON.parse(decodeURIComponent(queryString));
+  } catch (e) {
+    console.warn("Unable to parse querystring as JSON");
+  }
+}
+
 export const teamCondensationIsomorphism = {
   from: (queryString: string): Team => {
     try {
-      const { name, vehicles }: CondensedTeam = JSON.parse(
-        decodeURIComponent(queryString)
-      );
+      const { name, vehicles }: CondensedTeam = parseQueryString(queryString);
       return {
         name,
         vehicles: vehicles.flatMap(
@@ -154,6 +166,6 @@ export const teamCondensationIsomorphism = {
         ]
       )
     };
-    return JSON.stringify(condensedTeam);
+    return urlon.stringify(condensedTeam);
   }
 };
