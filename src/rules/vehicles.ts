@@ -91,7 +91,113 @@ export const vehicleTypes: VehicleType[] = [
     buildSlots: 3,
     cost: 30,
     includedUpgrades: []
+  },
+  {
+    name: "Drag Racer",
+    abbreviation: "dr",
+    weight: "Lightweight",
+    hull: 4,
+    handling: 4,
+    maxGear: 6,
+    crew: 1,
+    buildSlots: 2,
+    cost: 5,
+    includedUpgrades: [],
+    specialRule: "Jet Engine."
+  },
+  {
+    name: "Bike",
+    abbreviation: "bk",
+    weight: "Lightweight",
+    hull: 4,
+    handling: 5,
+    maxGear: 6,
+    crew: 1,
+    buildSlots: 1,
+    cost: 5,
+    includedUpgrades: [],
+    specialRule: "Full Throttle. Pivot."
+  },
+  {
+    name: "Bike with Sidecar",
+    abbreviation: "bks",
+    weight: "Lightweight",
+    hull: 4,
+    handling: 5,
+    maxGear: 6,
+    crew: 2,
+    buildSlots: 2,
+    cost: 8,
+    includedUpgrades: [],
+    specialRule: "Full Throttle. Pivot."
+  },
+  {
+    name: "Ice-cream Truck",
+    abbreviation: "it",
+    weight: "Middleweight",
+    hull: 10,
+    handling: 2,
+    maxGear: 4,
+    crew: 2,
+    buildSlots: 2,
+    cost: 8,
+    includedUpgrades: [],
+    specialRule: "Infuriating Jingle."
+  },
+  {
+    name: "Gyrocopter",
+    abbreviation: "it",
+    weight: "Middleweight",
+    hull: 4,
+    handling: 4,
+    maxGear: 6,
+    crew: 1,
+    buildSlots: 0,
+    cost: 10,
+    includedUpgrades: [],
+    specialRule: "Airwolf. Airborne."
+  },
+  {
+    name: "Ambulance",
+    abbreviation: "a",
+    weight: "Middleweight",
+    hull: 12,
+    handling: 2,
+    maxGear: 5,
+    crew: 3,
+    buildSlots: 3,
+    cost: 20,
+    includedUpgrades: [],
+    specialRule: "Uppers. Downers."
+  },
+  {
+    name: "Monster Truck",
+    abbreviation: "mt",
+    weight: "Heavyweight",
+    hull: 10,
+    handling: 3,
+    maxGear: 4,
+    crew: 2,
+    buildSlots: 2,
+    cost: 25,
+    includedUpgrades: [],
+    specialRule: "All Terrain. Up and Over."
+  },
+  // TODO: Helicopter (Rutherford only)
+  {
+    name: "War Rig",
+    abbreviation: "wr",
+    weight: "Heavyweight",
+    hull: 26,
+    handling: 2,
+    maxGear: 4,
+    crew: 5,
+    buildSlots: 5,
+    cost: 40,
+    includedUpgrades: [],
+    specialRule: "See War Rig rules."
   }
+  // TODO: Tank (Rutherford only)
 ];
 
 export interface ActiveVehicle {
