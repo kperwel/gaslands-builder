@@ -2,7 +2,8 @@
 
 ## TODO
 
-- Improve UI
 - Add print CSS
 - Add sponsors & perks
-- Add Mishkin upgrade & weapons
+- Add sponsor-specific vehicles
+- Add sponsor-specific upgrades
+- Provide more information when selecting vehicles & upgrades
