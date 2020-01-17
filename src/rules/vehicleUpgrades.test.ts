@@ -6,7 +6,7 @@ describe("vehicleUpgrades", () => {
       const vehiclesWithSameAbbreviation = vehicleUpgrades.filter(
         u => u.abbreviation === type.abbreviation
       );
-      expect(vehiclesWithSameAbbreviation.length).toBe(1);
+      expect(vehiclesWithSameAbbreviation).toEqual([type]);
     });
   });
 });

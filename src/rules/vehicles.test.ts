@@ -6,7 +6,7 @@ describe("vehicles", () => {
       const vehiclesWithSameAbbreviation = vehicleTypes.filter(
         t => t.abbreviation === type.abbreviation
       );
-      expect(vehiclesWithSameAbbreviation.length).toBe(1);
+      expect(vehiclesWithSameAbbreviation).toEqual([type]);
     });
   });
 });

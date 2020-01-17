@@ -138,7 +138,7 @@ export const vehicleTypes: VehicleType[] = [
   },
   {
     name: "Gyrocopter",
-    abbreviation: "it",
+    abbreviation: "gc",
     weight: "Middleweight",
     hull: 4,
     handling: 4,

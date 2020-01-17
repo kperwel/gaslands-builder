@@ -323,7 +323,7 @@ export const weaponTypes: WeaponType[] = [
   },
   {
     name: "Submachine Gun",
-    abbreviation: "sg",
+    abbreviation: "smg",
     range: "Medium",
     attackDice: 3,
     specialRules: ["Crew fired"],
