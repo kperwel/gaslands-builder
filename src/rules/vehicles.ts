@@ -15,6 +15,7 @@ export interface VehicleType {
   cost: number;
   includedUpgrades?: string[];
   specialRule?: string;
+  forbiddenUpgrades?: string[];
 }
 
 export const vehicleTypes: VehicleType[] = [
@@ -145,7 +146,8 @@ export const vehicleTypes: VehicleType[] = [
     crew: 1,
     buildSlots: 0,
     cost: 10,
-    specialRule: "Airwolf. Airborne."
+    specialRule: "Airwolf. Airborne.",
+    forbiddenUpgrades: ["Tank Tracks"]
   },
   {
     name: "Ambulance",
@@ -171,7 +173,7 @@ export const vehicleTypes: VehicleType[] = [
     cost: 25,
     specialRule: "All Terrain. Up and Over."
   },
-  // TODO: Helicopter (Rutherford only)
+  // TODO: Helicopter (Rutherford only), forbiddenUpgrades: ["Tank Tracks"]
   {
     name: "War Rig",
     abbreviation: "wr",
@@ -184,7 +186,7 @@ export const vehicleTypes: VehicleType[] = [
     cost: 40,
     specialRule: "See War Rig rules."
   }
-  // TODO: Tank (Rutherford only)
+  // TODO: Tank (Rutherford only), forbiddenUpgrades: ["Tank Tracks"]
 ];
 
 export interface ActiveVehicle {

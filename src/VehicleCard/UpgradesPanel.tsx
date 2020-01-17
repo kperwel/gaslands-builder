@@ -27,6 +27,10 @@ function canUpgradeBeAddedToVehicle(
   upgrade: VehicleUpgrade,
   vehicle: ActiveVehicle
 ): boolean {
+  if ((vehicle.type.forbiddenUpgrades || []).includes(upgrade.name)) {
+    return false;
+  }
+
   const usedUpgrade = vehicle.upgrades.find(({ type }) => type === upgrade);
 
   if (!usedUpgrade) {

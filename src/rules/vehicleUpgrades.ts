@@ -111,7 +111,6 @@ export const vehicleUpgrades: VehicleUpgrade[] = [
     quantity: "single"
   },
   {
-    // TODO: not for tank, helicopter & gyrocopter
     name: "Tank Tracks",
     abbreviation: "tt",
     description: "-1 Max gear, +1 Handling",
