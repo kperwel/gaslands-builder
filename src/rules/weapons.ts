@@ -3,6 +3,7 @@ import { WeaponFacing } from "./facing";
 export type WeaponRange =
   | "Short"
   | "Medium"
+  | "Long"
   | "Double"
   | "Small Burst"
   | "Large Burst"
@@ -296,6 +297,17 @@ export const weaponTypes: WeaponType[] = [
     specialRules: [],
     buildSlots: 0,
     cost: 3,
+    ammo: 3,
+    description: "See special rules."
+  },
+  {
+    name: "Shotgun",
+    abbreviation: "sho",
+    range: "Long",
+    attackDice: 0,
+    specialRules: ["Crew fired"],
+    buildSlots: 0,
+    cost: 4,
     ammo: 3,
     description: "See special rules."
   },
