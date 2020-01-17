@@ -87,7 +87,7 @@ const App: React.FC = (): React.ReactElement => {
                                 direction: "front"
                               }
                         })),
-                        upgrades: type.includedUpgrades.reduce(
+                        upgrades: (type.includedUpgrades || []).reduce(
                           (acc, upgrade) => {
                             const upgradeType = vehicleUpgrades.find(
                               u => u.name === upgrade

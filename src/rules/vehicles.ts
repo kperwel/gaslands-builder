@@ -13,7 +13,7 @@ export interface VehicleType {
   crew: number;
   buildSlots: number;
   cost: number;
-  includedUpgrades: string[];
+  includedUpgrades?: string[];
   specialRule?: string;
 }
 
@@ -40,8 +40,7 @@ export const vehicleTypes: VehicleType[] = [
     maxGear: 5,
     crew: 2,
     buildSlots: 2,
-    cost: 12,
-    includedUpgrades: []
+    cost: 12
   },
   {
     name: "Performance Car",
@@ -53,7 +52,6 @@ export const vehicleTypes: VehicleType[] = [
     crew: 1,
     buildSlots: 2,
     cost: 15,
-    includedUpgrades: [],
     specialRule: "Slip Away"
   },
   {
@@ -65,8 +63,7 @@ export const vehicleTypes: VehicleType[] = [
     maxGear: 4,
     crew: 3,
     buildSlots: 3,
-    cost: 15,
-    includedUpgrades: []
+    cost: 15
   },
   {
     name: "Heavy Truck",
@@ -77,8 +74,7 @@ export const vehicleTypes: VehicleType[] = [
     maxGear: 3,
     crew: 4,
     buildSlots: 5,
-    cost: 25,
-    includedUpgrades: []
+    cost: 25
   },
   {
     name: "Bus",
@@ -89,8 +85,7 @@ export const vehicleTypes: VehicleType[] = [
     maxGear: 3,
     crew: 8,
     buildSlots: 3,
-    cost: 30,
-    includedUpgrades: []
+    cost: 30
   },
   {
     name: "Drag Racer",
@@ -102,7 +97,6 @@ export const vehicleTypes: VehicleType[] = [
     crew: 1,
     buildSlots: 2,
     cost: 5,
-    includedUpgrades: [],
     specialRule: "Jet Engine."
   },
   {
@@ -115,7 +109,6 @@ export const vehicleTypes: VehicleType[] = [
     crew: 1,
     buildSlots: 1,
     cost: 5,
-    includedUpgrades: [],
     specialRule: "Full Throttle. Pivot."
   },
   {
@@ -128,7 +121,6 @@ export const vehicleTypes: VehicleType[] = [
     crew: 2,
     buildSlots: 2,
     cost: 8,
-    includedUpgrades: [],
     specialRule: "Full Throttle. Pivot."
   },
   {
@@ -141,7 +133,6 @@ export const vehicleTypes: VehicleType[] = [
     crew: 2,
     buildSlots: 2,
     cost: 8,
-    includedUpgrades: [],
     specialRule: "Infuriating Jingle."
   },
   {
@@ -154,7 +145,6 @@ export const vehicleTypes: VehicleType[] = [
     crew: 1,
     buildSlots: 0,
     cost: 10,
-    includedUpgrades: [],
     specialRule: "Airwolf. Airborne."
   },
   {
@@ -167,7 +157,6 @@ export const vehicleTypes: VehicleType[] = [
     crew: 3,
     buildSlots: 3,
     cost: 20,
-    includedUpgrades: [],
     specialRule: "Uppers. Downers."
   },
   {
@@ -180,7 +169,6 @@ export const vehicleTypes: VehicleType[] = [
     crew: 2,
     buildSlots: 2,
     cost: 25,
-    includedUpgrades: [],
     specialRule: "All Terrain. Up and Over."
   },
   // TODO: Helicopter (Rutherford only)
@@ -194,7 +182,6 @@ export const vehicleTypes: VehicleType[] = [
     crew: 5,
     buildSlots: 5,
     cost: 40,
-    includedUpgrades: [],
     specialRule: "See War Rig rules."
   }
   // TODO: Tank (Rutherford only)
@@ -219,7 +206,7 @@ export function calculateTotalCost({
     ) +
     upgrades
       .filter(({ type: { name } }) => {
-        return !type.includedUpgrades.includes(name);
+        return !(type.includedUpgrades || []).includes(name);
       })
       .reduce((acc, { type: { cost }, amount }) => acc + amount * cost, 0)
   );

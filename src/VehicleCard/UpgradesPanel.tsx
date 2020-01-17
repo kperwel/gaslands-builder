@@ -53,7 +53,7 @@ function isUpgradeIncluded(
   vehicle: ActiveVehicle,
   upgrade: ActiveVehicleUpgrade
 ): boolean {
-  return vehicle.type.includedUpgrades.includes(upgrade.type.name);
+  return (vehicle.type.includedUpgrades || []).includes(upgrade.type.name);
 }
 
 interface UpgradesPanelProps {
