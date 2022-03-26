@@ -4,11 +4,11 @@
 
 .tableCellControls {
   white-space: pre;
-  text-align: right !important;
+  text-align: right;
 }
 
 .secondaryTableCell {
-  padding-top: 4px !important;
+  padding-top: 4px;
   font-size: 0.8em;
   font-style: italic;
 }

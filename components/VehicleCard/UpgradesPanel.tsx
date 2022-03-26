@@ -4,9 +4,10 @@ import {
   HTMLTable,
   Icon,
   Menu,
-  Popover,
-  Position
+  MenuItem,
+  Position,
 } from "@blueprintjs/core";
+import { Popover2 } from "@blueprintjs/popover2";
 import * as React from "react";
 import { ArcOfFireIcon } from "./ArcOfFireIcon";
 import styles from "./Panel.module.css";
@@ -18,7 +19,7 @@ import {
   getPossibleDirections,
   isActiveVehicleUpgradeWithFacing,
   VehicleUpgrade,
-  vehicleUpgrades
+  vehicleUpgrades,
 } from "../rules/vehicleUpgrades";
 import { isTurretMountedWeapon } from "../rules/weapons";
 import assertNever from "assert-never";
@@ -67,7 +68,7 @@ interface UpgradesPanelProps {
 
 export const UpgradesPanel: React.FC<UpgradesPanelProps> = ({
   vehicle,
-  onUpdate
+  onUpdate,
 }) => {
   return (
     <>
@@ -121,9 +122,9 @@ export const UpgradesPanel: React.FC<UpgradesPanelProps> = ({
                                   facing: getNextExclusiveFacing(
                                     u,
                                     vehicle.upgrades
-                                  )
+                                  ),
                                 };
-                              })
+                              }),
                             });
                           }}
                         >
@@ -156,14 +157,14 @@ export const UpgradesPanel: React.FC<UpgradesPanelProps> = ({
                               onClick={() => {
                                 onUpdate({
                                   ...vehicle,
-                                  upgrades: vehicle.upgrades.map(u =>
+                                  upgrades: vehicle.upgrades.map((u) =>
                                     u.type === upgrade.type
                                       ? {
                                           type: upgrade.type,
-                                          amount: u.amount + 1
+                                          amount: u.amount + 1,
                                         }
                                       : u
-                                  )
+                                  ),
                                 });
                               }}
                             />
@@ -179,17 +180,17 @@ export const UpgradesPanel: React.FC<UpgradesPanelProps> = ({
                               ...vehicle,
                               upgrades:
                                 upgrade.amount > 1
-                                  ? vehicle.upgrades.map(u =>
+                                  ? vehicle.upgrades.map((u) =>
                                       u.type === upgrade.type
                                         ? {
                                             type: upgrade.type,
-                                            amount: u.amount - 1
+                                            amount: u.amount - 1,
                                           }
                                         : u
                                     )
                                   : vehicle.upgrades.filter(
                                       (v, i) => i !== index
-                                    )
+                                    ),
                             });
                           }}
                         />
@@ -204,7 +205,7 @@ export const UpgradesPanel: React.FC<UpgradesPanelProps> = ({
                             ...vehicle,
                             upgrades: vehicle.upgrades.filter(
                               (v, i) => i !== index
-                            )
+                            ),
                           });
                         }}
                       />
@@ -243,11 +244,11 @@ export const UpgradesPanel: React.FC<UpgradesPanelProps> = ({
           </tbody>
         </HTMLTable>
       )}
-      <Popover
+      <Popover2
         content={
           <Menu>
-            {vehicleUpgrades.map(upgrade => (
-              <Menu.Item
+            {vehicleUpgrades.map((upgrade) => (
+              <MenuItem
                 key={upgrade.name}
                 text={upgrade.name}
                 disabled={!canUpgradeBeAddedToVehicle(upgrade, vehicle)}
@@ -257,10 +258,10 @@ export const UpgradesPanel: React.FC<UpgradesPanelProps> = ({
                     upgrades: addUpgradeToVehicleUpgrades(
                       vehicle.upgrades,
                       upgrade
-                    )
+                    ),
                   });
                 }}
-              ></Menu.Item>
+              ></MenuItem>
             ))}
           </Menu>
         }
@@ -268,7 +269,7 @@ export const UpgradesPanel: React.FC<UpgradesPanelProps> = ({
         minimal
       >
         <Button icon="add">Add Upgrade</Button>
-      </Popover>
+      </Popover2>
     </>
   );
 };

@@ -6,8 +6,8 @@ import {
   Button,
   EditableText,
   Menu,
+  MenuItem,
   Navbar,
-  Popover,
   Position
 } from "@blueprintjs/core";
 import { useQueryStringReducer } from "../components/queryString";
@@ -24,6 +24,7 @@ import {
   vehicleUpgrades
 } from "../components/rules/vehicleUpgrades";
 import { NextPage } from "next";
+import { Popover2 } from "@blueprintjs/popover2";
 
 const App: NextPage = (): React.ReactElement => {
   const [team, dispatchTeamAction] = useQueryStringReducer(
@@ -66,11 +67,11 @@ const App: NextPage = (): React.ReactElement => {
             ({calculateTotalTeamCost(team)} cans)
           </h1>
 
-          <Popover
+          <Popover2
             content={
               <Menu>
                 {vehicleTypes.map(type => (
-                  <Menu.Item
+                  <MenuItem
                     key={type.name}
                     text={type.name}
                     onClick={() => {
@@ -101,7 +102,7 @@ const App: NextPage = (): React.ReactElement => {
                         )
                       });
                     }}
-                  ></Menu.Item>
+                  ></MenuItem>
                 ))}
               </Menu>
             }
@@ -109,7 +110,7 @@ const App: NextPage = (): React.ReactElement => {
             minimal
           >
             <Button>Add vehicle</Button>
-          </Popover>
+          </Popover2>
         </div>
         <div className={styles.vehiclesContainer}>
           {vehicles.map((vehicle, index) => (

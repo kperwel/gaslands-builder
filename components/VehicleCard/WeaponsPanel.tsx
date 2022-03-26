@@ -3,10 +3,11 @@ import {
   Button,
   HTMLTable,
   Icon,
-  Popover,
   Position,
-  Menu
+  Menu,
+  MenuItem
 } from "@blueprintjs/core";
+import { Popover2 } from "@blueprintjs/popover2";
 import * as React from "react";
 import {
   ActiveWeapon,
@@ -122,13 +123,13 @@ export const WeaponsPanel: React.FC<WeaponsPanelProps> = ({
           )}
         </tbody>
       </HTMLTable>
-      <Popover
+      <Popover2
         content={
           <Menu>
             {weaponTypes
               .filter(weapon => !weapon.isDefault)
               .map(weapon => (
-                <Menu.Item
+                <MenuItem
                   key={weapon.name}
                   text={weapon.name}
                   onClick={() =>
@@ -156,7 +157,7 @@ export const WeaponsPanel: React.FC<WeaponsPanelProps> = ({
                       ]
                     })
                   }
-                ></Menu.Item>
+                ></MenuItem>
               ))}
           </Menu>
         }
@@ -164,7 +165,7 @@ export const WeaponsPanel: React.FC<WeaponsPanelProps> = ({
         minimal
       >
         <Button icon="add">Add Weapon</Button>
-      </Popover>
+      </Popover2>
     </>
   );
 };
