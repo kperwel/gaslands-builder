@@ -3,12 +3,13 @@ import styles from "../components/App.module.css";
 import { ActiveVehicle, vehicleTypes } from "../components/rules/vehicles";
 import { VehicleCard } from "../components/VehicleCard";
 import {
+  Alignment,
   Button,
   EditableText,
   Menu,
   MenuItem,
   Navbar,
-  Position
+  Position,
 } from "@blueprintjs/core";
 import { useQueryStringReducer } from "../components/queryString";
 import { defaultWeaponTypes } from "../components/rules/weapons";
@@ -16,17 +17,19 @@ import reducer from "../components/teamReducer";
 import {
   calculateTotalTeamCost,
   INITIAL_TEAM,
-  teamCondensationIsomorphism
+  teamCondensationIsomorphism,
 } from "../components/team";
 import {
   ActiveVehicleUpgrade,
   addUpgradeToVehicleUpgrades,
-  vehicleUpgrades
+  vehicleUpgrades,
 } from "../components/rules/vehicleUpgrades";
 import { NextPage } from "next";
 import { Popover2 } from "@blueprintjs/popover2";
+import useTheme from "../components/useTheme";
 
 const App: NextPage = (): React.ReactElement => {
+  const { isDark, toggleTheme } = useTheme();
   const [team, dispatchTeamAction] = useQueryStringReducer(
     reducer,
     INITIAL_TEAM,
@@ -52,10 +55,16 @@ const App: NextPage = (): React.ReactElement => {
   };
 
   return (
-    <div className={styles.wrapper}>
+    <div className={`${styles.wrapper} ${isDark ? "bp4-dark" : ""}`}>
       <Navbar>
         <Navbar.Group>
           <Navbar.Heading>Gaslands Builder</Navbar.Heading>
+        </Navbar.Group>
+        <Navbar.Group align={Alignment.RIGHT}>
+          <Button
+            icon={isDark ? "lightbulb" : "moon"}
+            onClick={toggleTheme}
+          />
         </Navbar.Group>
       </Navbar>
       <main className={styles.main}>
@@ -70,36 +79,36 @@ const App: NextPage = (): React.ReactElement => {
           <Popover2
             content={
               <Menu>
-                {vehicleTypes.map(type => (
+                {vehicleTypes.map((type) => (
                   <MenuItem
                     key={type.name}
                     text={type.name}
                     onClick={() => {
                       addVehicle({
                         type,
-                        weapons: defaultWeaponTypes.map(type => ({
+                        weapons: defaultWeaponTypes.map((type) => ({
                           type,
                           facing: type.isCrewFired
                             ? {
                                 type: "WeaponFacingCrewFired",
-                                direction: "360°"
+                                direction: "360°",
                               }
                             : {
                                 type: "WeaponFacingUserSelected",
-                                direction: "front"
-                              }
+                                direction: "front",
+                              },
                         })),
                         upgrades: (type.includedUpgrades || []).reduce(
                           (acc, upgrade) => {
                             const upgradeType = vehicleUpgrades.find(
-                              u => u.name === upgrade
+                              (u) => u.name === upgrade
                             );
                             return upgradeType
                               ? addUpgradeToVehicleUpgrades(acc, upgradeType)
                               : acc;
                           },
                           [] as ActiveVehicleUpgrade[]
-                        )
+                        ),
                       });
                     }}
                   ></MenuItem>
@@ -120,7 +129,7 @@ const App: NextPage = (): React.ReactElement => {
             >
               <VehicleCard
                 vehicle={vehicle}
-                onUpdate={updatedVehicle => {
+                onUpdate={(updatedVehicle) => {
                   updateVehicle(index, updatedVehicle);
                 }}
                 onDuplicate={() => {
