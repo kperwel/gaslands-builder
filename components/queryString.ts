@@ -10,7 +10,7 @@ export function useQueryString<T>(
   iso: Isomorphism<T, string>
 ): [T, (v: T) => void] {
   const [desiredState, setDesiredState] = React.useState(() =>
-    window.location.search
+    typeof window !== "undefined" && window.location.search
       ? iso.from(window.location.search.slice(1))
       : initialState
   );
