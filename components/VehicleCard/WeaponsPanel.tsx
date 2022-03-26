@@ -5,14 +5,15 @@ import {
   Icon,
   Position,
   Menu,
-  MenuItem
+  MenuItem,
+  Tag,
 } from "@blueprintjs/core";
 import { Popover2 } from "@blueprintjs/popover2";
 import * as React from "react";
 import {
   ActiveWeapon,
   calculateActiveWeaponCost,
-  weaponTypes
+  weaponTypes,
 } from "../rules/weapons";
 import { ArcOfFireIcon } from "./ArcOfFireIcon";
 import styles from "./Panel.module.css";
@@ -25,7 +26,7 @@ interface WeaponsPanelProps {
 
 export const WeaponsPanel: React.FC<WeaponsPanelProps> = ({
   vehicle,
-  onUpdate
+  onUpdate,
 }) => {
   return (
     <>
@@ -76,9 +77,9 @@ export const WeaponsPanel: React.FC<WeaponsPanelProps> = ({
                               }
                               return {
                                 type: w.type,
-                                facing: getNextFacing(w.facing)
+                                facing: getNextFacing(w.facing),
                               };
-                            })
+                            }),
                           });
                         }}
                       >
@@ -102,7 +103,7 @@ export const WeaponsPanel: React.FC<WeaponsPanelProps> = ({
                             ...vehicle,
                             weapons: vehicle.weapons.filter(
                               (v, i) => i !== index
-                            )
+                            ),
                           });
                         }}
                       />
@@ -113,7 +114,7 @@ export const WeaponsPanel: React.FC<WeaponsPanelProps> = ({
                   <tr key={type.abbreviation + index + "d"}>
                     <td colSpan={6} className={styles.secondaryTableCell}>
                       {[type.ammo ? `Ammo ${type.ammo}` : "", type.description]
-                        .filter(s => s && s.length > 0)
+                        .filter((s) => s && s.length > 0)
                         .join(", ")}
                     </td>
                   </tr>
@@ -125,43 +126,57 @@ export const WeaponsPanel: React.FC<WeaponsPanelProps> = ({
       </HTMLTable>
       <Popover2
         content={
-          <Menu>
-            {weaponTypes
-              .filter(weapon => !weapon.isDefault)
-              .map(weapon => (
-                <MenuItem
-                  key={weapon.name}
-                  text={weapon.name}
-                  onClick={() =>
-                    onUpdate({
-                      ...vehicle,
-                      weapons: [
-                        ...vehicle.weapons,
-                        {
-                          type: weapon,
-                          facing: weapon.isCrewFired
-                            ? {
-                                type: "WeaponFacingCrewFired",
-                                direction: "360°"
-                              }
-                            : weapon.range === "Dropped"
-                            ? {
-                                type: "WeaponFacingDropped",
-                                direction: "360°"
-                              }
-                            : {
-                                type: "WeaponFacingUserSelected",
-                                direction: "front"
-                              }
-                        }
-                      ]
-                    })
-                  }
-                ></MenuItem>
-              ))}
-          </Menu>
+          <div className={styles.menuOverflow}>
+            <Menu>
+              {weaponTypes
+                .filter((weapon) => !weapon.isDefault)
+                .map((weapon) => (
+                  <MenuItem
+                    key={weapon.name}
+                    text={weapon.name}
+                    labelElement={
+                      <>
+                        <Tag icon="cube" minimal>
+                          {weapon.attackDice}d6
+                        </Tag>
+                        <Tag icon="cog" minimal>
+                          {weapon.buildSlots}
+                        </Tag>
+                        <Tag icon="dollar" minimal>
+                          {weapon.cost}
+                        </Tag>
+                      </>
+                    }
+                    onClick={() =>
+                      onUpdate({
+                        ...vehicle,
+                        weapons: [
+                          ...vehicle.weapons,
+                          {
+                            type: weapon,
+                            facing: weapon.isCrewFired
+                              ? {
+                                  type: "WeaponFacingCrewFired",
+                                  direction: "360°",
+                                }
+                              : weapon.range === "Dropped"
+                              ? {
+                                  type: "WeaponFacingDropped",
+                                  direction: "360°",
+                                }
+                              : {
+                                  type: "WeaponFacingUserSelected",
+                                  direction: "front",
+                                },
+                          },
+                        ],
+                      })
+                    }
+                  ></MenuItem>
+                ))}
+            </Menu>
+          </div>
         }
-        position={Position.BOTTOM}
         minimal
       >
         <Button icon="add">Add Weapon</Button>

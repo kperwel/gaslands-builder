@@ -12,3 +12,8 @@
   font-size: 0.8em;
   font-style: italic;
 }
+
+.menuOverflow {
+  overflow-y: scroll;
+  max-height: min(500px, 100vh);
+}
