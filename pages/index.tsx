@@ -162,10 +162,18 @@ const App: NextPage = (): React.ReactElement => {
         >
           bfncs
         </a>
+        {" "}and{" "}
+        <a
+          href="https://twitter.com/kperwel"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          kperwel
+        </a>
         .<br />
         Issues? Report and contribute on{" "}
         <a
-          href="https://github.com/bfncs/gaslands-builder"
+          href="https://github.com/kperwel/gaslands-builder"
           target="_blank"
           rel="noopener noreferrer"
         >
