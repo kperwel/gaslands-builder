@@ -4,7 +4,8 @@ type WeaponFacingType =
   | "WeaponFacingUserSelected"
   | "WeaponFacingTurretMounted"
   | "WeaponFacingCrewFired"
-  | "WeaponFacingDropped";
+  | "WeaponFacingDropped"
+  | "WeaponFacingForced";
 export type WeaponFacingDirection = "front" | "rear" | "side" | "360°";
 
 interface WeaponFacingBase<
@@ -17,6 +18,8 @@ interface WeaponFacingBase<
 
 interface WeaponFacingUserSelected
   extends WeaponFacingBase<"WeaponFacingUserSelected"> {}
+
+interface WeaponFacingForced extends WeaponFacingBase<"WeaponFacingForced"> {}
 
 interface WeaponFacingTurretMounted
   extends WeaponFacingBase<"WeaponFacingTurretMounted", "360°"> {}
@@ -31,13 +34,15 @@ export type WeaponFacing =
   | WeaponFacingUserSelected
   | WeaponFacingTurretMounted
   | WeaponFacingCrewFired
-  | WeaponFacingDropped;
+  | WeaponFacingDropped
+  | WeaponFacingForced;
 
 const weaponFacingTypeAbbreviations: { [key: string]: WeaponFacingType } = {
   u: "WeaponFacingUserSelected",
   t: "WeaponFacingTurretMounted",
   c: "WeaponFacingCrewFired",
-  d: "WeaponFacingDropped"
+  d: "WeaponFacingDropped",
+  f: "WeaponFacingForced",
 };
 
 const weaponFacingDirectionAbbreviations: {
@@ -46,7 +51,7 @@ const weaponFacingDirectionAbbreviations: {
   f: "front",
   r: "rear",
   s: "side",
-  t: "360°"
+  t: "360°",
 };
 const directions: WeaponFacingDirection[] = Object.values(
   weaponFacingDirectionAbbreviations
@@ -63,6 +68,7 @@ export const weaponFacingStringIsomorphism = {
 
     switch (type) {
       case "WeaponFacingUserSelected":
+      case "WeaponFacingForced":
         const directionAbbreviation: string = (Object.entries(
           weaponFacingDirectionAbbreviations
         ).find(([k, v]) => v === facing.direction) ||
@@ -82,24 +88,25 @@ export const weaponFacingStringIsomorphism = {
       "WeaponFacingUserSelected";
     switch (type) {
       case "WeaponFacingUserSelected":
+      case "WeaponFacingForced":
         const direction: WeaponFacingDirection =
           weaponFacingDirectionAbbreviations[abbreviation.substr(2, 1)] ||
           "front";
         return {
-          type: "WeaponFacingUserSelected",
-          direction
+          type,
+          direction,
         };
       case "WeaponFacingTurretMounted":
       case "WeaponFacingCrewFired":
       case "WeaponFacingDropped":
         return {
           type,
-          direction: "360°"
+          direction: "360°",
         };
       default:
         assertNever(type);
     }
-  }
+  },
 };
 
 export function getNextFacing({ type, direction }: WeaponFacing): WeaponFacing {
@@ -109,12 +116,14 @@ export function getNextFacing({ type, direction }: WeaponFacing): WeaponFacing {
       const nextIndex = (currentIndex + 1) % 4;
       return {
         type,
-        direction: directions[nextIndex]
+        direction: directions[nextIndex],
       };
     case "WeaponFacingTurretMounted":
     case "WeaponFacingCrewFired":
     case "WeaponFacingDropped":
       return { type, direction: "360°" };
+    case "WeaponFacingForced":
+      return { type, direction: "front" };
     default:
       assertNever(type);
   }

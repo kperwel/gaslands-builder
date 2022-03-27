@@ -13,6 +13,7 @@ import * as React from "react";
 import {
   ActiveWeapon,
   calculateActiveWeaponCost,
+  getInitialFacing,
   weaponTypes,
 } from "../rules/weapons";
 import { ArcOfFireIcon } from "./ArcOfFireIcon";
@@ -154,20 +155,7 @@ export const WeaponsPanel: React.FC<WeaponsPanelProps> = ({
                           ...vehicle.weapons,
                           {
                             type: weapon,
-                            facing: weapon.isCrewFired
-                              ? {
-                                  type: "WeaponFacingCrewFired",
-                                  direction: "360°",
-                                }
-                              : weapon.range === "Dropped"
-                              ? {
-                                  type: "WeaponFacingDropped",
-                                  direction: "360°",
-                                }
-                              : {
-                                  type: "WeaponFacingUserSelected",
-                                  direction: "front",
-                                },
+                            facing: getInitialFacing(weapon),
                           },
                         ],
                       })
