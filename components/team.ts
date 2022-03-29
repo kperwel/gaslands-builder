@@ -14,6 +14,7 @@ import {
   weaponFacingStringIsomorphism
 } from "./rules/facing";
 import urlon from "urlon";
+import { generateTeamName } from "./names";
 
 export interface Team {
   name: string;
@@ -44,7 +45,7 @@ interface CondensedTeam {
   vehicles: CondensedActiveVehicle[];
 }
 
-export const INITIAL_TEAM: Team = { name: "New Team", vehicles: [] };
+export const INITIAL_TEAM: Team = { name: generateTeamName(), vehicles: [] };
 
 export function calculateTotalTeamCost(team: Team) {
   return team.vehicles.reduce(

@@ -29,6 +29,7 @@ import useTheme from "../components/useTheme";
 import useDetectPrint from "../components/PrintView/useDetectPrint";
 import PrintView from "../components/PrintView/index";
 import { VehicleCard } from "../components/VehicleCard";
+import { generateCarName } from "../components/names";
 
 const App: NextPage = (): React.ReactElement => {
   const { isDark, toggleTheme } = useTheme();
@@ -92,7 +93,7 @@ const App: NextPage = (): React.ReactElement => {
                     text={type.name}
                     onClick={() => {
                       addVehicle({
-                        name: "New Car",
+                        name: generateCarName(),
                         type,
                         weapons: defaultWeaponTypes.map((type) => ({
                           type,
@@ -197,7 +198,6 @@ const App: NextPage = (): React.ReactElement => {
           Github
         </a>
         .<br />
-        {isPrinting ? "PRINT" : "NOT PRINT"}
       </div>
     </div>
   );
