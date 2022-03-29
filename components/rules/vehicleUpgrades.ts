@@ -39,6 +39,7 @@ interface VehicleUpgradeWithoutFacing {
   effects: VehicleUpgradeEffect[];
   buildSlots: number;
   cost: number;
+  ammo?: number,
   quantity: UpgradeQuantity;
 }
 
@@ -147,6 +148,7 @@ export const vehicleUpgrades: VehicleUpgrade[] = [
     effects: [],
     buildSlots: 0,
     cost: 3,
+    ammo: 1,
     quantity: "singleEachFacing",
     configurableFacing: true
   }

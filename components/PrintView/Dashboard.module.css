@@ -1,0 +1,89 @@
+.dashboard {
+    font-family:'Rubik-ExtraBold, Rubik', sans-serif;
+    font-weight:800;
+    text-transform: uppercase;
+    font-size: 3mm;
+
+    border: 1mm solid black;
+    display: block;
+    width: 8.70cm;
+    padding: 1mm 5mm;
+
+    display: flex;
+    flex-direction: column;
+    gap: 1mm;
+}
+
+.marker {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    gap: 1mm;
+    height: 11mm;
+    align-content: flex-start;
+}
+
+.box {
+    width: 5mm;
+    height: 5mm;
+    border: 1mm solid black;
+}
+
+.skills {
+    border: 1mm solid black;
+    flex: 1;
+    padding: 1mm;
+    font-size: 3mm;
+    list-style: none;
+    margin: 0;
+}
+
+.gearValue {
+    font-size: 10mm;
+}
+
+.gear {
+    width: 2cm;
+    height: 2cm;
+    border: 1mm solid black;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 2.5mm;
+    white-space: nowrap;
+    padding: 1mm;
+}
+
+.row {
+    display: flex;
+    gap: 5mm;
+    justify-content: space-between;
+}
+
+.name {
+    border-bottom: 1mm dashed black;
+    font-size: 7mm;
+}
+.typeName {
+    font-size: 5mm;
+}
+
+.weight {
+    font-size: 4mm;
+}
+
+.weapon {
+    display: flex;
+    flex-direction: column;
+}
+
+.weaponMeta {
+    display: flex;
+    justify-content: space-between;
+}
+
+.dice {
+    font-size: 2.5mm;
+    text-align: right;
+    display: inline;
+}

@@ -129,6 +129,7 @@ export const teamCondensationIsomorphism = {
 
             return [
               {
+                name: "",
                 type,
                 weapons,
                 upgrades

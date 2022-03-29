@@ -190,6 +190,7 @@ export const vehicleTypes: VehicleType[] = [
 ];
 
 export interface ActiveVehicle {
+  name: string,
   type: VehicleType;
   weapons: ActiveWeapon[];
   upgrades: ActiveVehicleUpgrade[];

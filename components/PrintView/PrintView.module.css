@@ -1,0 +1,12 @@
+.printList {
+    display: flex;
+    gap: 5mm;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    flex-direction: row;
+}
+
+.qr {
+    margin-left: auto;
+    margin-top: 5mm;
+}

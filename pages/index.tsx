@@ -1,7 +1,6 @@
 import React from "react";
 import styles from "../components/App.module.css";
 import { ActiveVehicle, vehicleTypes } from "../components/rules/vehicles";
-import { VehicleCard } from "../components/VehicleCard";
 import {
   Alignment,
   Button,
@@ -27,6 +26,9 @@ import {
 import { NextPage } from "next";
 import { Popover2 } from "@blueprintjs/popover2";
 import useTheme from "../components/useTheme";
+import useDetectPrint from "../components/PrintView/useDetectPrint";
+import PrintView from "../components/PrintView/index";
+import { VehicleCard } from "../components/VehicleCard";
 
 const App: NextPage = (): React.ReactElement => {
   const { isDark, toggleTheme } = useTheme();
@@ -35,6 +37,8 @@ const App: NextPage = (): React.ReactElement => {
     INITIAL_TEAM,
     teamCondensationIsomorphism
   );
+
+  const isPrinting = useDetectPrint();
 
   const { name, vehicles } = team;
 
@@ -54,17 +58,20 @@ const App: NextPage = (): React.ReactElement => {
     dispatchTeamAction({ type: "updateTeamName", name });
   };
 
-  return (
+  const updateVehicleName = (name: string): void => {
+    dispatchTeamAction({ type: "updateTeamName", name });
+  };
+
+  return isPrinting ? (
+    <PrintView team={team} />
+  ) : (
     <div className={`${styles.wrapper} ${isDark ? "bp4-dark" : ""}`}>
       <Navbar>
         <Navbar.Group>
           <Navbar.Heading>Gaslands Builder</Navbar.Heading>
         </Navbar.Group>
         <Navbar.Group align={Alignment.RIGHT}>
-          <Button
-            icon={isDark ? "lightbulb" : "moon"}
-            onClick={toggleTheme}
-          />
+          <Button icon={isDark ? "lightbulb" : "moon"} onClick={toggleTheme} />
         </Navbar.Group>
       </Navbar>
       <main className={styles.main}>
@@ -85,6 +92,7 @@ const App: NextPage = (): React.ReactElement => {
                     text={type.name}
                     onClick={() => {
                       addVehicle({
+                        name: "",
                         type,
                         weapons: defaultWeaponTypes.map((type) => ({
                           type,
@@ -127,6 +135,13 @@ const App: NextPage = (): React.ReactElement => {
               className={styles.vehiclesItem}
               key={`${vehicle.type}-${index}`}
             >
+              <EditableText
+                maxLength={80}
+                value={name}
+                onChange={updateVehicleName}
+              >
+                Vehicle Name
+              </EditableText>{" "}
               <VehicleCard
                 vehicle={vehicle}
                 onUpdate={(updatedVehicle) => {
@@ -161,8 +176,8 @@ const App: NextPage = (): React.ReactElement => {
           rel="noopener noreferrer"
         >
           bfncs
-        </a>
-        {" "}and{" "}
+        </a>{" "}
+        and{" "}
         <a
           href="https://twitter.com/kperwel"
           target="_blank"
@@ -180,6 +195,7 @@ const App: NextPage = (): React.ReactElement => {
           Github
         </a>
         .<br />
+        {isPrinting ? "PRINT" : "NOT PRINT"}
       </div>
     </div>
   );
