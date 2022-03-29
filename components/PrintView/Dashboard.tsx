@@ -11,7 +11,7 @@ import styles from "./Dashboard.module.css";
 export default function PrintView({ vehicle }: { vehicle: ActiveVehicle }) {
   return (
     <article className={styles.dashboard}>
-      <div className={styles.name}>&nbsp;</div>
+      <div className={styles.name}>{vehicle.name}&nbsp;</div>
       <div className={styles.row}>
         <div className={styles.typeName}>{vehicle.type.name}</div>
         <div className={styles.weight}>{vehicle.type.weight}</div>

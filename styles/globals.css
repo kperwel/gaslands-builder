@@ -17,6 +17,12 @@ button {
   -moz-osx-font-smoothing: grayscale;
 }
 
+body,
+html,
+#__next {
+  height: 100%;
+}
+
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;

@@ -20,6 +20,7 @@ export interface Team {
   vehicles: ActiveVehicle[];
 }
 
+type VehicleName = string;
 type VehicleTypeAbbreviation = string;
 type WeaponTypeAbbreviation = string;
 type WeaponFacingAbbreviation = string;
@@ -32,6 +33,7 @@ type CondensedActiveUpgrade =
   | [UpgradeTypeAbbreviaiton, UpgradeAmount, WeaponFacingDirection];
 
 type CondensedActiveVehicle = [
+  VehicleName,
   VehicleTypeAbbreviation,
   CondensedActiveWeapon[],
   CondensedActiveUpgrade[]
@@ -73,6 +75,7 @@ export const teamCondensationIsomorphism = {
         vehicles: vehicles.flatMap(
           (condensed: CondensedActiveVehicle): ActiveVehicle[] => {
             const [
+              name,
               vehicleTypeAbbreviation,
               condensedActiveWeapons,
               condensedUpgrades
@@ -129,7 +132,7 @@ export const teamCondensationIsomorphism = {
 
             return [
               {
-                name: "",
+                name,
                 type,
                 weapons,
                 upgrades
@@ -148,6 +151,7 @@ export const teamCondensationIsomorphism = {
       name,
       vehicles: vehicles.map(
         (v: ActiveVehicle): CondensedActiveVehicle => [
+          v.name,
           v.type.abbreviation,
           v.weapons.map(
             ({ type, facing }): CondensedActiveWeapon => [

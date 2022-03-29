@@ -23,11 +23,18 @@ interface UpdateTeamNameAction {
   name: string;
 }
 
+interface UpdateVehicleNameAction {
+  type: "updateVehicleName";
+  index: number;
+  name: string;
+}
+
 type VehicleAction =
   | AddVehicleAction
   | RemoveVehicleAction
   | UpdateVehicleAction
-  | UpdateTeamNameAction;
+  | UpdateTeamNameAction
+  | UpdateVehicleNameAction;
 
 const reducer: React.Reducer<Team, VehicleAction> = (state, action) => {
   switch (action.type) {
@@ -55,6 +62,13 @@ const reducer: React.Reducer<Team, VehicleAction> = (state, action) => {
       return {
         ...state,
         name: action.name
+      };
+    case "updateVehicleName":
+      return {
+        ...state,
+        vehicles: state.vehicles.map((vehicle, index) =>
+          index === action.index ? { ...vehicle, name: action.name } : vehicle
+        )
       };
     default:
       throw new Error(`unknown vhicle reducer action: ${action}`);

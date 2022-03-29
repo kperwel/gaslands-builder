@@ -58,8 +58,8 @@ const App: NextPage = (): React.ReactElement => {
     dispatchTeamAction({ type: "updateTeamName", name });
   };
 
-  const updateVehicleName = (name: string): void => {
-    dispatchTeamAction({ type: "updateTeamName", name });
+  const updateVehicleName = (index: number, name: string): void => {
+    dispatchTeamAction({ type: "updateVehicleName", index, name });
   };
 
   return isPrinting ? (
@@ -92,7 +92,7 @@ const App: NextPage = (): React.ReactElement => {
                     text={type.name}
                     onClick={() => {
                       addVehicle({
-                        name: "",
+                        name: "New Car",
                         type,
                         weapons: defaultWeaponTypes.map((type) => ({
                           type,
@@ -135,13 +135,15 @@ const App: NextPage = (): React.ReactElement => {
               className={styles.vehiclesItem}
               key={`${vehicle.type}-${index}`}
             >
-              <EditableText
-                maxLength={80}
-                value={name}
-                onChange={updateVehicleName}
-              >
-                Vehicle Name
-              </EditableText>{" "}
+              <h2>
+                <EditableText
+                  maxLength={80}
+                  value={vehicle.name}
+                  onChange={(name) => updateVehicleName(index, name)}
+                >
+                  New Car
+                </EditableText>
+              </h2>{" "}
               <VehicleCard
                 vehicle={vehicle}
                 onUpdate={(updatedVehicle) => {
