@@ -10,3 +10,9 @@
     margin-left: auto;
     margin-top: 5mm;
 }
+
+.name {
+    font-family:'Rubik-ExtraBold, Rubik', sans-serif;
+    font-weight:800;
+    text-transform: uppercase;
+}

@@ -63,6 +63,7 @@
 .name {
     border-bottom: 1mm dashed black;
     font-size: 5.5mm;
+    text-transform: uppercase;
 }
 .typeName {
     font-size: 5mm;
