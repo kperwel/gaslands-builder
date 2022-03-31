@@ -1,14 +1,16 @@
 .printList {
-    display: flex;
+    /* display: flex;
     gap: 5mm;
     flex-wrap: wrap;
     align-items: flex-start;
-    flex-direction: row;
+    flex-direction: row; */
+    column-gap: 2mm;
+    columns: 8.70cm auto;
 }
 
 .qr {
     margin-left: auto;
-    margin-top: 5mm;
+    margin: 5mm 3mm;
 }
 
 .name {

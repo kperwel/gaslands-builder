@@ -6,6 +6,7 @@ import {
   Menu,
   MenuItem,
   Position,
+  Tag,
 } from "@blueprintjs/core";
 import { Popover2 } from "@blueprintjs/popover2";
 import * as React from "react";
@@ -23,6 +24,7 @@ import {
 } from "../rules/vehicleUpgrades";
 import { isTurretMountedWeapon } from "../rules/weapons";
 import assertNever from "assert-never";
+import ScrollableMenu from "../ScrollableMenu";
 
 function canUpgradeBeAddedToVehicle(
   upgrade: VehicleUpgrade,
@@ -74,7 +76,7 @@ export const UpgradesPanel: React.FC<UpgradesPanelProps> = ({
     <>
       {(vehicle.upgrades.length > 0 ||
         vehicle.weapons.filter(isTurretMountedWeapon).length > 0) && (
-        <HTMLTable>
+        <HTMLTable width="100%">
           <thead>
             <tr>
               <td>
@@ -246,12 +248,22 @@ export const UpgradesPanel: React.FC<UpgradesPanelProps> = ({
       )}
       <Popover2
         content={
-          <Menu>
+          <ScrollableMenu>
             {vehicleUpgrades.map((upgrade) => (
               <MenuItem
                 key={upgrade.name}
                 text={upgrade.name}
                 disabled={!canUpgradeBeAddedToVehicle(upgrade, vehicle)}
+                labelElement={
+                  <>
+                    <Tag icon="cog" minimal>
+                      {upgrade.buildSlots}
+                    </Tag>
+                    <Tag icon="dollar" minimal>
+                      {upgrade.cost}
+                    </Tag>
+                  </>
+                }
                 onClick={() => {
                   onUpdate({
                     ...vehicle,
@@ -263,7 +275,7 @@ export const UpgradesPanel: React.FC<UpgradesPanelProps> = ({
                 }}
               ></MenuItem>
             ))}
-          </Menu>
+          </ScrollableMenu>
         }
         position={Position.BOTTOM}
         minimal

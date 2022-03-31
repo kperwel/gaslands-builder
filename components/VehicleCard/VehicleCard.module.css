@@ -20,3 +20,13 @@
   white-space: pre;
   text-align: right;
 }
+
+.card {
+  padding: 5px;
+}
+
+@media screen and (min-width: 920px) {
+  .card {
+    padding: 10px;
+  }
+}

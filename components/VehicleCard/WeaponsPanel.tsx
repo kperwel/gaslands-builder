@@ -19,6 +19,7 @@ import {
 import { ArcOfFireIcon } from "./ArcOfFireIcon";
 import styles from "./Panel.module.css";
 import { getNextFacing } from "../rules/facing";
+import ScrollableMenu from "../ScrollableMenu";
 
 interface WeaponsPanelProps {
   vehicle: ActiveVehicle;
@@ -31,7 +32,7 @@ export const WeaponsPanel: React.FC<WeaponsPanelProps> = ({
 }) => {
   return (
     <>
-      <HTMLTable>
+      <HTMLTable width="100%">
         <thead>
           <tr>
             <td>
@@ -127,43 +128,41 @@ export const WeaponsPanel: React.FC<WeaponsPanelProps> = ({
       </HTMLTable>
       <Popover2
         content={
-          <div className={styles.menuOverflow}>
-            <Menu>
-              {weaponTypes
-                .filter((weapon) => !weapon.isDefault)
-                .map((weapon) => (
-                  <MenuItem
-                    key={weapon.name}
-                    text={weapon.name}
-                    labelElement={
-                      <>
-                        <Tag icon="cube" minimal>
-                          {weapon.attackDice}d6
-                        </Tag>
-                        <Tag icon="cog" minimal>
-                          {weapon.buildSlots}
-                        </Tag>
-                        <Tag icon="dollar" minimal>
-                          {weapon.cost}
-                        </Tag>
-                      </>
-                    }
-                    onClick={() =>
-                      onUpdate({
-                        ...vehicle,
-                        weapons: [
-                          ...vehicle.weapons,
-                          {
-                            type: weapon,
-                            facing: getInitialFacing(weapon),
-                          },
-                        ],
-                      })
-                    }
-                  ></MenuItem>
-                ))}
-            </Menu>
-          </div>
+          <ScrollableMenu>
+            {weaponTypes
+              .filter((weapon) => !weapon.isDefault)
+              .map((weapon) => (
+                <MenuItem
+                  key={weapon.name}
+                  text={weapon.name}
+                  labelElement={
+                    <>
+                      <Tag icon="cube" minimal>
+                        {weapon.attackDice}d6
+                      </Tag>
+                      <Tag icon="cog" minimal>
+                        {weapon.buildSlots}
+                      </Tag>
+                      <Tag icon="dollar" minimal>
+                        {weapon.cost}
+                      </Tag>
+                    </>
+                  }
+                  onClick={() =>
+                    onUpdate({
+                      ...vehicle,
+                      weapons: [
+                        ...vehicle.weapons,
+                        {
+                          type: weapon,
+                          facing: getInitialFacing(weapon),
+                        },
+                      ],
+                    })
+                  }
+                ></MenuItem>
+              ))}
+          </ScrollableMenu>
         }
         minimal
       >

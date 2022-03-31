@@ -3,6 +3,7 @@ import {
   Button,
   ButtonGroup,
   Card,
+  Elevation,
   Intent,
   Tab,
   Tabs,
@@ -59,8 +60,8 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({
 }): React.ReactElement => {
   const buildSlotsInUse = calculateBuildSlotsInUse(vehicle);
   return (
-    <Card>
-      <h2>{vehicle.type.name}</h2>
+    <Card className={styles.card} elevation={Elevation.TWO}>
+      <h3>{vehicle.type.name}</h3>
       <PropertyTag label="Cost" value={calculateTotalCost(vehicle)} />
       <PropertyTag
         label="Build Slots"

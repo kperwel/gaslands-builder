@@ -12,12 +12,13 @@ export default function PrintView({ team }: { team: Team }) {
         {team.vehicles.map((v, i) => (
           <Dashboard key={i} vehicle={v} />
         ))}
+        
+        <QRCode
+          className={styles.qr}
+          value={typeof window !== "undefined" ? window.location.href : ""}
+          size={128}
+        />
       </div>
-      <QRCode
-        className={styles.qr}
-        value={typeof window !== "undefined" ? window.location.href : ""}
-        size={128}
-      />
     </div>
   );
 }

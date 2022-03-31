@@ -9,6 +9,7 @@ import {
   MenuItem,
   Navbar,
   Position,
+  Tag,
 } from "@blueprintjs/core";
 import { useQueryStringReducer } from "../components/queryString";
 import { defaultWeaponTypes } from "../components/rules/weapons";
@@ -30,6 +31,7 @@ import useDetectPrint from "../components/PrintView/useDetectPrint";
 import PrintView from "../components/PrintView/index";
 import { VehicleCard } from "../components/VehicleCard";
 import { generateCarName } from "../components/names";
+import ScrollableMenu from "../components/ScrollableMenu";
 
 const App: NextPage = (): React.ReactElement => {
   const { isDark, toggleTheme } = useTheme();
@@ -86,11 +88,27 @@ const App: NextPage = (): React.ReactElement => {
 
           <Popover2
             content={
-              <Menu>
+              <ScrollableMenu>
                 {vehicleTypes.map((type) => (
                   <MenuItem
                     key={type.name}
                     text={type.name}
+                    labelElement={
+                      <>
+                        <Tag icon="dollar" minimal>
+                          {type.cost}
+                        </Tag>
+                        <Tag icon="person" minimal>
+                          {type.crew}
+                        </Tag>
+                        <Tag icon="git-branch" minimal>
+                          {type.handling}
+                        </Tag>
+                        <Tag icon="cog" minimal>
+                          {type.buildSlots}
+                        </Tag>
+                      </>
+                    }
                     onClick={() => {
                       addVehicle({
                         name: generateCarName(),
@@ -122,7 +140,7 @@ const App: NextPage = (): React.ReactElement => {
                     }}
                   ></MenuItem>
                 ))}
-              </Menu>
+              </ScrollableMenu>
             }
             position={Position.BOTTOM}
             minimal
@@ -136,7 +154,7 @@ const App: NextPage = (): React.ReactElement => {
               className={styles.vehiclesItem}
               key={`${vehicle.type}-${index}`}
             >
-              <h2>
+              <h2 className={styles.vehicleName}>
                 <EditableText
                   maxLength={80}
                   value={vehicle.name}
