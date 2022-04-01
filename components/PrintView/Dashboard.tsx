@@ -1,4 +1,5 @@
-import { HTMLTable, Icon } from "@blueprintjs/core";
+import { Icon } from "@blueprintjs/core";
+import { Bullet, Shield } from "../icons/icons";
 import React from "react";
 import {
   ActiveVehicle,
@@ -20,16 +21,13 @@ export default function PrintView({ vehicle }: { vehicle: ActiveVehicle }) {
         <div className={styles.typeName}>{vehicle.type.name}</div>
         <div className={styles.weight}>{vehicle.type.weight}</div>
       </div>
-      <Marker
-        value={calculateTotalHull(vehicle)}
-        height={calculateTotalHull(vehicle) > 7 ? 2 : 1}
-      />
       {vehicle.type.specialRule ? (
         <div>Special rule: {vehicle.type.specialRule}</div>
       ) : null}
-      <div className={styles.row}>
+      <div className={styles.rowRight}>
+        <Marker variant="hull" render={(i) => <Shield key={i} />} value={calculateTotalHull(vehicle)} />
         <div className={styles.diceSlot}>
-          <div>VOTES</div>
+          <div>AUDIENCE</div>
           <div className={styles.gearValue}></div>
         </div>
         <div className={styles.diceSlot}>
@@ -75,8 +73,8 @@ export default function PrintView({ vehicle }: { vehicle: ActiveVehicle }) {
                 {(type.description || type.ammo) && (
                   <tr key={type.abbreviation + index + "d"}>
                     <td colSpan={4} className={styles.secondaryTableCell}>
-                      {type.description}
-                      <Marker value={type.ammo} />
+                      {type.specialRules.join(", ")} {type.note}
+                      <Marker variant="ammo" render={(i) => <Bullet key={i} />} value={type.ammo} />
                     </td>
                   </tr>
                 )}
@@ -85,11 +83,6 @@ export default function PrintView({ vehicle }: { vehicle: ActiveVehicle }) {
           )}
         </tbody>
       </table>
-      <ul className={styles.skills}>
-        {console.log(vehicle)}
-        {vehicle.weapons.map(weapon)}
-        {vehicle.upgrades.map(upgrade)}
-      </ul>
       <div className={styles.row}>
         <div className={styles.handling}>
           HANDLING: {calculateHandling(vehicle)}
@@ -101,42 +94,20 @@ export default function PrintView({ vehicle }: { vehicle: ActiveVehicle }) {
   );
 }
 
-function Marker({ value = 1, height = 1 }) {
+interface MarkerPropsType {
+  value?: number;
+  label?: string;
+  variant?: string;
+  render: (index: number) => React.ReactElement
+}
+
+function Marker({ value = 1, label, variant, render }: MarkerPropsType) {
   return (
-    <div className={styles.marker} style={{ height: `${height * 5.5}mm` }}>
+    <div className={styles.marker} data-variant={variant} data-mt-10={value > 10}>
+      {label}
       {Array(value)
         .fill(0)
-        .map((_, i) => (
-          <div key={i} className={styles.box} />
-        ))}
+        .map((_, i) => render(i))}
     </div>
-  );
-}
-
-function weapon(
-  weapon: ActiveVehicle["weapons"][number],
-  i: number
-): React.ReactElement {
-  return (
-    <li className={styles.weapon} key={`weapon-${i}`}>
-      <div className={styles.weaponMeta}>
-        {weapon.type.name} <span>{weapon.type.range}</span>{" "}
-        <ArcOfFireIcon facing={weapon.facing} />{" "}
-        <span className={styles.dice}>({weapon.type.attackDice}d6)</span>
-      </div>
-      {weapon.type.ammo ? <Marker value={weapon.type.ammo} /> : null}
-    </li>
-  );
-}
-
-function upgrade(
-  upgrade: ActiveVehicle["upgrades"][number],
-  i: number
-): React.ReactElement {
-  return (
-    <li key={`upgrade-${i}`}>
-      {upgrade.type.name}
-      {upgrade.type.ammo ? <Marker value={upgrade.type.ammo} /> : null}
-    </li>
   );
 }

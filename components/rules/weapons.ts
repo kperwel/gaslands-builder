@@ -17,7 +17,8 @@ export type WeaponSpecialRules =
   | "Fire"
   | "Indirect"
   | "Blitz"
-  | "Front mounted only";
+  | "Front mounted only"
+  | "360°";
 
 export interface WeaponType {
   name: string;
@@ -30,6 +31,7 @@ export interface WeaponType {
   isDefault?: boolean;
   isCrewFired?: boolean;
   description?: string;
+  note?: string;
   ammo?: number;
 }
 
@@ -104,7 +106,6 @@ export const weaponTypes: WeaponType[] = [
     ammo: 1,
     description:
       "When fired make immediate forced move medium straight backwards, switch to Gear 1, gain 3 Hazard tokens. Front mounted only.",
-    // TODO: force front mounted only
   },
   {
     name: "Blunderbuss",
@@ -352,11 +353,10 @@ export const weaponTypes: WeaponType[] = [
     abbreviation: "wa",
     range: "Medium",
     attackDice: 0,
-    specialRules: [],
+    specialRules: ["360°"],
     buildSlots: 3,
     cost: 4,
     description: "360° arc of fire. See special rules.",
-    // TODO: force 360° arc of fire
   },
   {
     name: "Wreck Lobber",
@@ -400,6 +400,10 @@ export function isFrontFacingOnlyWeapon({ specialRules }: WeaponType): boolean {
   return specialRules.includes("Front mounted only");
 }
 
+export function is360OnlyWeapon({ specialRules }: WeaponType): boolean {
+  return specialRules.includes("360°");
+}
+
 export function calculateActiveWeaponCost(weapon: ActiveWeapon): number {
   const mountFactor = isTurretMountedWeapon(weapon) ? 3 : 1;
   return mountFactor * weapon.type.cost;
@@ -422,6 +426,12 @@ export function getInitialFacing(weapon: WeaponType): WeaponFacing {
     return {
       type: "WeaponFacingForced",
       direction: "front",
+    };
+  }  
+  if (is360OnlyWeapon(weapon)) {
+    return {
+      type: "WeaponFacingForced",
+      direction: "360°",
     };
   }
 
