@@ -83,7 +83,7 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({
       )}
 
       <div className={styles.kitContainer}>
-        <Tabs>
+        <Tabs animate={false}>
           <Tab
             id="weapons"
             title={buildTabTitle("Weapons", vehicle.weapons)}
