@@ -4,6 +4,7 @@ import { ActiveVehicle, vehicleTypes } from "../components/rules/vehicles";
 import {
   Alignment,
   Button,
+  ButtonGroup,
   EditableText,
   Menu,
   MenuItem,
@@ -41,7 +42,7 @@ const App: NextPage = (): React.ReactElement => {
     teamCondensationIsomorphism
   );
 
-  const isPrinting = useDetectPrint();
+  const [isPrinting, print] = useDetectPrint();
 
   const { name, vehicles } = team;
 
@@ -74,7 +75,13 @@ const App: NextPage = (): React.ReactElement => {
           <Navbar.Heading>Gaslands Builder</Navbar.Heading>
         </Navbar.Group>
         <Navbar.Group align={Alignment.RIGHT}>
-          <Button icon={isDark ? "lightbulb" : "moon"} onClick={toggleTheme} />
+          <ButtonGroup>
+            <Button icon="print" onClick={print} />
+            <Button
+              icon={isDark ? "lightbulb" : "moon"}
+              onClick={toggleTheme}
+            />
+          </ButtonGroup>
         </Navbar.Group>
       </Navbar>
       <main className={styles.main}>
