@@ -5,7 +5,7 @@ function useDetectPrint() {
 
   const print = () => {
     toggleStatus(true);
-    setTimeout(window.print, 10);
+    setTimeout(window.print, 0);
   }
 
   useLayoutEffect(() => {
