@@ -65,7 +65,7 @@ const App: NextPage = (): React.ReactElement => {
     dispatchTeamAction({ type: "updateVehicleName", index, name });
   };
 
-  return isPrinting ? (
+  return isPrinting || true ? (
     <PrintView team={team} />
   ) : (
     <div className={`${styles.wrapper} ${isDark ? "bp4-dark" : ""}`}>

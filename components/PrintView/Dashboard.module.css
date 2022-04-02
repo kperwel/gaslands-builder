@@ -21,7 +21,7 @@
 }
 
 .marker {
-  display: flex;
+  display: inline-flex;
   flex-wrap: wrap;
   align-content: flex-start;
   align-items: center;
@@ -40,6 +40,10 @@
 .marker[data-variant="ammo"] {
     gap: 1mm;
     justify-content: flex-end;
+}
+
+.marker[data-variant="common"] {
+  display: inline-block;
 }
 
 .skills {
@@ -126,10 +130,61 @@
 
 .table td {
   text-align: center;
-  vertical-align: middle;
   padding: 1mm;
 }
 
-.table .secondaryTableCell {
+.table td:first-child {
   text-align: left;
+}
+
+.table .secondaryTableCell {
+  font-size: 2mm;
+}
+
+.textDetails {
+  text-align: left;
+  padding: 0.1mm 2mm;
+}
+
+.ammo {
+  text-align: right;
+  flex-shrink: 0;
+  flex-grow: 1;
+}
+
+.details {
+  display: flex;
+}
+
+.specialRules {
+  font-size: 1.5mm;
+  text-align: right;
+}
+
+.upgradesList {
+  list-style: none;
+  padding: 1mm 0 0 1mm;
+  margin: 0;
+  font-size: 2.5mm;
+}
+
+.upgradesList li {
+  display: inline-block;
+  display: inline-flex;
+  gap: 1mm;
+  height: 7mm;
+  margin-top: -1mm;
+  margin-left: -1mm;
+  border: 1mm solid;
+  justify-items: center;
+  justify-content: center;
+  align-items: center;
+  padding: 1mm;
+}
+
+.box {
+  width: 3mm;
+  height: 3mm;
+  display: inline-block;
+  border: 0.6mm solid black;
 }

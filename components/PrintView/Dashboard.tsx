@@ -12,6 +12,10 @@ import {
 import { ActiveWeapon } from "../rules/weapons";
 import { ArcOfFireIcon } from "../VehicleCard/ArcOfFireIcon";
 import styles from "./Dashboard.module.css";
+import {
+  ActiveVehicleUpgrade,
+  isActiveVehicleUpgradeWithFacing,
+} from "../rules/vehicleUpgrades";
 
 export default function PrintView({ vehicle }: { vehicle: ActiveVehicle }) {
   return (
@@ -25,7 +29,11 @@ export default function PrintView({ vehicle }: { vehicle: ActiveVehicle }) {
         <div>Special rule: {vehicle.type.specialRule}</div>
       ) : null}
       <div className={styles.rowRight}>
-        <Marker variant="hull" render={(i) => <Shield key={i} />} value={calculateTotalHull(vehicle)} />
+        <Marker
+          variant="hull"
+          render={(i) => <Shield key={i} />}
+          value={calculateTotalHull(vehicle)}
+        />
         <div className={styles.diceSlot}>
           <div>AUDIENCE</div>
           <div className={styles.gearValue}></div>
@@ -42,9 +50,7 @@ export default function PrintView({ vehicle }: { vehicle: ActiveVehicle }) {
       <table className={styles.table}>
         <thead>
           <tr>
-            <td>
-              <Icon title="Weapon" icon="ninja" />
-            </td>
+            <td>Weapon</td>
             <td>
               <Icon title="Arc of fire" icon="locate" />
             </td>
@@ -61,8 +67,13 @@ export default function PrintView({ vehicle }: { vehicle: ActiveVehicle }) {
             ({ type, facing }: ActiveWeapon, index: number) => (
               <React.Fragment key={type.abbreviation + index}>
                 <tr>
-                  <td rowSpan={type.description || type.ammo ? 2 : 1}>
+                  <td>
                     {type.name}
+                    <div className={styles.specialRules}>
+                      {type.specialRules.length > 0
+                        ? `(${type.specialRules.join(", ")})`
+                        : null}
+                    </div>
                   </td>
                   <td>
                     <ArcOfFireIcon facing={facing} />
@@ -73,8 +84,18 @@ export default function PrintView({ vehicle }: { vehicle: ActiveVehicle }) {
                 {(type.description || type.ammo) && (
                   <tr key={type.abbreviation + index + "d"}>
                     <td colSpan={4} className={styles.secondaryTableCell}>
-                      {type.specialRules.join(", ")} {type.note}
-                      <Marker variant="ammo" render={(i) => <Bullet key={i} />} value={type.ammo} />
+                      <div className={styles.details}>
+                        <div className={styles.textDetails}>
+                          {type.description}
+                        </div>
+                        <div className={styles.ammo}>
+                          <Marker
+                            variant="ammo"
+                            render={(i) => <Bullet key={i} />}
+                            value={type.ammo}
+                          />
+                        </div>
+                      </div>
                     </td>
                   </tr>
                 )}
@@ -83,6 +104,27 @@ export default function PrintView({ vehicle }: { vehicle: ActiveVehicle }) {
           )}
         </tbody>
       </table>
+
+      <ul className={styles.upgradesList}>
+        {vehicle.upgrades.map((upgrade, index: number) => (
+          <React.Fragment key={upgrade.type.abbreviation + index}>
+            <li>
+              {upgrade.type.name}{" "}
+              {upgrade.amount > 1 ? `x${upgrade.amount}` : null}
+              {isActiveVehicleUpgradeWithFacing(upgrade) ? (
+                <ArcOfFireIcon facing={upgrade.facing} />
+              ) : null}
+              {upgrade.type.ammo ? (
+                <Marker
+                  variant="common"
+                  render={(i) => <div className={styles.box} key={i} />}
+                  value={upgrade.type.ammo}
+                />
+              ) : null}
+            </li>
+          </React.Fragment>
+        ))}
+      </ul>
       <div className={styles.row}>
         <div className={styles.handling}>
           HANDLING: {calculateHandling(vehicle)}
@@ -98,12 +140,16 @@ interface MarkerPropsType {
   value?: number;
   label?: string;
   variant?: string;
-  render: (index: number) => React.ReactElement
+  render: (index: number) => React.ReactElement;
 }
 
 function Marker({ value = 1, label, variant, render }: MarkerPropsType) {
   return (
-    <div className={styles.marker} data-variant={variant} data-mt-10={value > 10}>
+    <div
+      className={styles.marker}
+      data-variant={variant}
+      data-mt-10={value > 10}
+    >
       {label}
       {Array(value)
         .fill(0)
