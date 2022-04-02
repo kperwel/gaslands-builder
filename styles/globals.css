@@ -21,6 +21,7 @@ body,
 html,
 #__next {
   height: 100%;
+  overflow: auto;
 }
 
 code {
