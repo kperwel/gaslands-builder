@@ -8,7 +8,7 @@ function useDetectPrint() {
     setTimeout(window.print, 0);
   }
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     if (typeof window === "undefined") {
       return;
     }
