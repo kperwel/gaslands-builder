@@ -227,11 +227,7 @@ export function getPossibleDirections(
     "rear",
     "side",
   ];
-  console.log(
-    potentialDirections.filter(
-      (direction) => !activeFacings.includes(direction)
-    )
-  );
+
   return potentialDirections.filter(
     (direction) => !activeFacings.includes(direction)
   );
