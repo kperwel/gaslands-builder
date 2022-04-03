@@ -5,11 +5,13 @@ import {
   Alignment,
   Button,
   ButtonGroup,
+  Card,
   EditableText,
   Menu,
   MenuItem,
   Navbar,
   Position,
+  RangeSlider,
   Tag,
 } from "@blueprintjs/core";
 import { useQueryStringReducer } from "../components/queryString";
@@ -31,11 +33,15 @@ import useTheme from "../components/useTheme";
 import useDetectPrint from "../components/PrintView/useDetectPrint";
 import PrintView from "../components/PrintView/index";
 import { VehicleCard } from "../components/VehicleCard";
-import { generateCarName } from "../components/names";
+import { generateCarName } from "../components/randomizers/names";
 import ScrollableMenu from "../components/ScrollableMenu";
+import { randomBetween } from "../components/randomizers/utils";
 
 const App: NextPage = (): React.ReactElement => {
   const { isDark, toggleTheme } = useTheme();
+  const [randomCostRange, setRandomCostRange] = React.useState<
+    [number, number]
+  >([0, 100]);
   const [team, dispatchTeamAction] = useQueryStringReducer(
     reducer,
     INITIAL_TEAM,
@@ -48,6 +54,13 @@ const App: NextPage = (): React.ReactElement => {
 
   const addVehicle = (vehicle: ActiveVehicle): void => {
     dispatchTeamAction({ type: "addVehicle", vehicle });
+  };
+
+  const addRandomVehicle = (): void => {
+    dispatchTeamAction({
+      type: "addRandomVehicle",
+      value: randomBetween(randomCostRange[0], randomCostRange[1]),
+    });
   };
 
   const removeVehicle = (index: number): void => {
@@ -92,68 +105,91 @@ const App: NextPage = (): React.ReactElement => {
             </EditableText>{" "}
             ({calculateTotalTeamCost(team)} cans)
           </h1>
-
-          <Popover2
-            content={
-              <ScrollableMenu>
-                {vehicleTypes.map((type) => (
-                  <MenuItem
-                    key={type.name}
-                    text={type.name}
-                    labelElement={
-                      <>
-                        <Tag icon="dollar" minimal>
-                          {type.cost}
-                        </Tag>
-                        <Tag icon="person" minimal>
-                          {type.crew}
-                        </Tag>
-                        <Tag icon="git-branch" minimal>
-                          {type.handling}
-                        </Tag>
-                        <Tag icon="cog" minimal>
-                          {type.buildSlots}
-                        </Tag>
-                      </>
-                    }
-                    onClick={() => {
-                      addVehicle({
-                        name: generateCarName(),
-                        type,
-                        weapons: defaultWeaponTypes.map((type) => ({
+          <ButtonGroup>
+            <Popover2
+              content={
+                <ScrollableMenu>
+                  {vehicleTypes.map((type) => (
+                    <MenuItem
+                      key={type.name}
+                      text={type.name}
+                      labelElement={
+                        <>
+                          <Tag icon="dollar" minimal>
+                            {type.cost}
+                          </Tag>
+                          <Tag icon="person" minimal>
+                            {type.crew}
+                          </Tag>
+                          <Tag icon="git-branch" minimal>
+                            {type.handling}
+                          </Tag>
+                          <Tag icon="cog" minimal>
+                            {type.buildSlots}
+                          </Tag>
+                        </>
+                      }
+                      onClick={() => {
+                        addVehicle({
+                          name: generateCarName(),
                           type,
-                          facing: type.isCrewFired
-                            ? {
-                                type: "WeaponFacingCrewFired",
-                                direction: "360°",
-                              }
-                            : {
-                                type: "WeaponFacingUserSelected",
-                                direction: "front",
-                              },
-                        })),
-                        upgrades: (type.includedUpgrades || []).reduce(
-                          (acc, upgrade) => {
-                            const upgradeType = vehicleUpgrades.find(
-                              (u) => u.name === upgrade
-                            );
-                            return upgradeType
-                              ? addUpgradeToVehicleUpgrades(acc, upgradeType)
-                              : acc;
-                          },
-                          [] as ActiveVehicleUpgrade[]
-                        ),
-                      });
-                    }}
-                  ></MenuItem>
-                ))}
-              </ScrollableMenu>
-            }
-            position={Position.BOTTOM}
-            minimal
-          >
-            <Button>Add vehicle</Button>
-          </Popover2>
+                          weapons: defaultWeaponTypes.map((type) => ({
+                            type,
+                            facing: type.isCrewFired
+                              ? {
+                                  type: "WeaponFacingCrewFired",
+                                  direction: "360°",
+                                }
+                              : {
+                                  type: "WeaponFacingUserSelected",
+                                  direction: "front",
+                                },
+                          })),
+                          upgrades: (type.includedUpgrades || []).reduce(
+                            (acc, upgrade) => {
+                              const upgradeType = vehicleUpgrades.find(
+                                (u) => u.name === upgrade
+                              );
+                              return upgradeType
+                                ? addUpgradeToVehicleUpgrades(acc, upgradeType)
+                                : acc;
+                            },
+                            [] as ActiveVehicleUpgrade[]
+                          ),
+                        });
+                      }}
+                    ></MenuItem>
+                  ))}
+                </ScrollableMenu>
+              }
+              position={Position.BOTTOM}
+              minimal
+            >
+              <Button icon="add">Add vehicle</Button>
+            </Popover2>
+            <Popover2
+              content={
+                <Card>
+                  <RangeSlider
+                    min={0}
+                    max={100}
+                    stepSize={1}
+                    labelStepSize={20}
+                    onChange={setRandomCostRange}
+                    value={randomCostRange}
+                  />
+                  <Button  icon="add" onClick={addRandomVehicle}>
+                    Add vehicle ({randomCostRange[0]} cans - {randomCostRange[1]}{" "}
+                    cans)
+                  </Button>
+                </Card>
+              }
+              position={Position.BOTTOM}
+              minimal
+            >
+              <Button icon="random" rightIcon="settings">Add random vehicle</Button>
+            </Popover2>
+          </ButtonGroup>
         </div>
         <div className={styles.vehiclesContainer}>
           {vehicles.map((vehicle, index) => (

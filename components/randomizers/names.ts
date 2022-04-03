@@ -1,3 +1,4 @@
+import { randomFromArray } from "./utils";
 import adjectiveDb from "./words/adjective.json";
 import nounDb from "./words/noun.json";
 import prepositionDb from "./words/preposition.json";
@@ -7,8 +8,6 @@ const adjective = () => randomFromArray(adjectiveDb);
 const noun = () => randomFromArray(nounDb);
 const preposition = () => randomFromArray(prepositionDb);
 
-const randomFromArray = <T>(arr: Array<T>) =>
-  arr[Math.floor(Math.random() * arr.length)];
 
 interface NameGenerator {
   (): string;

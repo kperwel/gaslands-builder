@@ -440,3 +440,17 @@ export function getInitialFacing(weapon: WeaponType): WeaponFacing {
     direction: "front",
   };
 }
+
+
+export const getDefaultWeaponTypes = (): Array<ActiveWeapon> => defaultWeaponTypes.map((type) => ({
+  type,
+  facing: type.isCrewFired
+    ? {
+        type: "WeaponFacingCrewFired",
+        direction: "360°",
+      }
+    : {
+        type: "WeaponFacingUserSelected",
+        direction: "front",
+      },
+}));

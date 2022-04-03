@@ -14,7 +14,7 @@ import {
   weaponFacingStringIsomorphism
 } from "./rules/facing";
 import urlon from "urlon";
-import { generateTeamName } from "./names";
+import { generateTeamName } from "./randomizers/names";
 
 export interface Team {
   name: string;

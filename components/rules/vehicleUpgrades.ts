@@ -39,7 +39,7 @@ interface VehicleUpgradeWithoutFacing {
   effects: VehicleUpgradeEffect[];
   buildSlots: number;
   cost: number;
-  ammo?: number,
+  ammo?: number;
   quantity: UpgradeQuantity;
 }
 
@@ -59,12 +59,12 @@ export const vehicleUpgrades: VehicleUpgrade[] = [
     effects: [
       {
         type: "ArmourUpgradeEffect",
-        hull: 2
-      }
+        hull: 2,
+      },
     ],
     buildSlots: 1,
     cost: 4,
-    quantity: "unlimited"
+    quantity: "unlimited",
   },
   // TODO: Experimental Nuclear Engine (after Sponsors, Mishkin only)
   // TODO: Experimental Teleporter (after Sponsors, Mishkin only)
@@ -75,12 +75,12 @@ export const vehicleUpgrades: VehicleUpgrade[] = [
     effects: [
       {
         type: "CrewUpgradeEffect",
-        crew: 1
-      }
+        crew: 1,
+      },
     ],
     buildSlots: 0,
     cost: 4,
-    quantity: "limited"
+    quantity: "limited",
   },
   {
     name: "Improvised Sludge Thrower",
@@ -90,7 +90,7 @@ export const vehicleUpgrades: VehicleUpgrade[] = [
     effects: [],
     buildSlots: 1,
     cost: 2,
-    quantity: "single"
+    quantity: "single",
   },
   {
     name: "Nitro Booster",
@@ -100,7 +100,7 @@ export const vehicleUpgrades: VehicleUpgrade[] = [
     effects: [],
     buildSlots: 0,
     cost: 6,
-    quantity: "single"
+    quantity: "single",
   },
   {
     name: "Roll Cage",
@@ -109,7 +109,7 @@ export const vehicleUpgrades: VehicleUpgrade[] = [
     effects: [],
     buildSlots: 1,
     cost: 4,
-    quantity: "single"
+    quantity: "single",
   },
   {
     name: "Tank Tracks",
@@ -118,16 +118,16 @@ export const vehicleUpgrades: VehicleUpgrade[] = [
     effects: [
       {
         type: "MaxGearUpgradeEffect",
-        gear: -1
+        gear: -1,
       },
       {
         type: "HandlingUpgradeEffect",
-        handling: 1
-      }
+        handling: 1,
+      },
     ],
     buildSlots: 1,
     cost: 4,
-    quantity: "single"
+    quantity: "single",
   },
   {
     name: "Ram",
@@ -138,7 +138,7 @@ export const vehicleUpgrades: VehicleUpgrade[] = [
     buildSlots: 1,
     cost: 4,
     quantity: "singleEachFacing",
-    configurableFacing: true
+    configurableFacing: true,
   },
   {
     name: "Exploding Ram",
@@ -150,14 +150,14 @@ export const vehicleUpgrades: VehicleUpgrade[] = [
     cost: 3,
     ammo: 1,
     quantity: "singleEachFacing",
-    configurableFacing: true
-  }
+    configurableFacing: true,
+  },
 ];
 
 export const vehicleUpgradeLimitCalculators: {
   [key: string]: (v: ActiveVehicle) => number;
 } = {
-  c: vehicle => vehicle.type.crew
+  c: (vehicle) => vehicle.type.crew,
 };
 
 export function calculateUpgradeQuantityLimit(
@@ -190,11 +190,33 @@ export function isActiveVehicleUpgradeWithFacing(
   return "facing" in upgrade && "configurableFacing" in upgrade.type;
 }
 
+export function isVehicleUpgradeWithFacing(
+  upgrade: VehicleUpgrade
+): upgrade is VehicleUpgradeWithFacing {
+  return "configurableFacing" in upgrade && upgrade.configurableFacing;
+}
+
+export function getEmptyDirections(activeUpgrades: ActiveVehicleUpgrade[]) {
+  const activeFacings: WeaponFacingDirection[] = activeUpgrades.flatMap((u) =>
+    isActiveVehicleUpgradeWithFacing(u) ? [u.facing.direction] : []
+  );
+
+  const potentialDirections: WeaponFacingDirection[] = [
+    "front",
+    "rear",
+    "side",
+  ];
+
+  return potentialDirections.filter(
+    (direction) => !activeFacings.includes(direction)
+  );
+}
+
 export function getPossibleDirections(
   upgradeType: VehicleUpgrade,
   activeUpgrades: ActiveVehicleUpgrade[]
 ): WeaponFacingDirection[] {
-  const activeFacings: WeaponFacingDirection[] = activeUpgrades.flatMap(u =>
+  const activeFacings: WeaponFacingDirection[] = activeUpgrades.flatMap((u) =>
     u.type === upgradeType && isActiveVehicleUpgradeWithFacing(u)
       ? [u.facing.direction]
       : []
@@ -203,10 +225,15 @@ export function getPossibleDirections(
   const potentialDirections: WeaponFacingDirection[] = [
     "front",
     "rear",
-    "side"
+    "side",
   ];
+  console.log(
+    potentialDirections.filter(
+      (direction) => !activeFacings.includes(direction)
+    )
+  );
   return potentialDirections.filter(
-    direction => !activeFacings.includes(direction)
+    (direction) => !activeFacings.includes(direction)
   );
 }
 
@@ -228,33 +255,49 @@ export function getNextExclusiveFacing(
 
   return {
     type: "WeaponFacingUserSelected",
-    direction
+    direction,
   };
 }
 
+const getFirstPossibleFacing = (
+  upgrade: VehicleUpgrade,
+  vehicleUpgrades: ActiveVehicleUpgrade[]
+) => getPossibleDirections(upgrade, vehicleUpgrades)[0];
+
 export function addUpgradeToVehicleUpgrades(
   vehicleUpgrades: ActiveVehicleUpgrade[],
-  upgrade: VehicleUpgrade
+  upgrade: VehicleUpgrade,
+  directionSelectionStrategy = getFirstPossibleFacing
 ): ActiveVehicleUpgrade[] {
-  const currentUpgrade = vehicleUpgrades.find(u => u.type === upgrade);
+  const currentUpgrade = vehicleUpgrades.find((u) => u.type === upgrade);
 
   const hasConfigurableFacing = "configurableFacing" in upgrade;
 
-  return currentUpgrade && !hasConfigurableFacing
-    ? vehicleUpgrades.map(u =>
-        u.type === upgrade ? { ...u, amount: u.amount + 1 } : u
-      )
-    : [
-        ...vehicleUpgrades,
-        hasConfigurableFacing
-          ? {
-              type: upgrade,
-              amount: 1,
-              facing: {
-                type: "WeaponFacingUserSelected",
-                direction: getPossibleDirections(upgrade, vehicleUpgrades)[0]
-              }
-            }
-          : { type: upgrade, amount: 1 }
-      ];
+  if (currentUpgrade && !hasConfigurableFacing) {
+    return vehicleUpgrades.map((u) =>
+      u.type === upgrade ? { ...u, amount: u.amount + 1 } : u
+    );
+  }
+
+  if (hasConfigurableFacing) {
+    return [
+      ...vehicleUpgrades,
+      {
+        type: upgrade,
+        amount: 1,
+        facing: {
+          type: "WeaponFacingUserSelected",
+          direction: directionSelectionStrategy(upgrade, vehicleUpgrades),
+        },
+      },
+    ];
+  }
+
+  return [...vehicleUpgrades, { type: upgrade, amount: 1 }];
 }
+
+export const getDefaultUpgrades = (includedUpgrades: Array<string> = []) =>
+  includedUpgrades.reduce((acc, upgrade) => {
+    const upgradeType = vehicleUpgrades.find((u) => u.name === upgrade);
+    return upgradeType ? addUpgradeToVehicleUpgrades(acc, upgradeType) : acc;
+  }, [] as ActiveVehicleUpgrade[]);
