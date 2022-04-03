@@ -19,7 +19,7 @@ interface WeaponFitRequirements {
 const checkUpgradeRequirements = (
   weapon: WeaponType,
   context: WeaponFitRequirements
-) => weapon.cost <= context.maxCost && weapon.buildSlots <= context.maxSlots;
+) => weapon.cost <= context.maxCost && weapon.buildSlots <= context.maxSlots && weapon.isDefault !== true;
 const getRandomWeaponFittingRequirements = (
   requirements: WeaponFitRequirements
 ) =>
