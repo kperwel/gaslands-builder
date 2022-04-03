@@ -204,7 +204,7 @@ const App: NextPage = (): React.ReactElement => {
               content={
                 <Card>
                   <H5>Confirm deletion</H5>
-                  <p>Are you sure you want to delete all cars? Remember, that you can keep your cars saving current url.</p>
+                  <p>Are you sure you want to delete all cars?<br/>Remember, that you can keep them by saving current url.</p>
                   <div style={{ display: "flex", justifyContent: "flex-end", marginTop: 15 }}>
                     <Button className={Classes.POPOVER_DISMISS} style={{ marginRight: 10 }}>
                         Cancel
