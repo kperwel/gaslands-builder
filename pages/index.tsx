@@ -6,10 +6,14 @@ import {
   Button,
   ButtonGroup,
   Card,
+  Classes,
   EditableText,
+  H5,
+  Intent,
   Menu,
   MenuItem,
   Navbar,
+  PopoverInteractionKind,
   Position,
   RangeSlider,
   Tag,
@@ -54,6 +58,10 @@ const App: NextPage = (): React.ReactElement => {
 
   const addVehicle = (vehicle: ActiveVehicle): void => {
     dispatchTeamAction({ type: "addVehicle", vehicle });
+  };
+
+  const clearAllVehicles = (): void => {
+    dispatchTeamAction({ type: "clearAllVehicles" });
   };
 
   const addRandomVehicle = (): void => {
@@ -178,16 +186,40 @@ const App: NextPage = (): React.ReactElement => {
                     onChange={setRandomCostRange}
                     value={randomCostRange}
                   />
-                  <Button  icon="add" onClick={addRandomVehicle}>
-                    Add vehicle ({randomCostRange[0]} cans - {randomCostRange[1]}{" "}
-                    cans)
+                  <Button icon="add" onClick={addRandomVehicle}>
+                    Add vehicle ({randomCostRange[0]} cans -{" "}
+                    {randomCostRange[1]} cans)
                   </Button>
                 </Card>
               }
               position={Position.BOTTOM}
               minimal
             >
-              <Button icon="random" rightIcon="settings">Add random vehicle</Button>
+              <Button icon="random" rightIcon="settings">
+                Add random vehicle
+              </Button>
+            </Popover2>
+            <Popover2
+              captureDismiss
+              content={
+                <Card>
+                  <H5>Confirm deletion</H5>
+                  <p>Are you sure you want to delete all cars? Remember, that you can keep your cars saving current url.</p>
+                  <div style={{ display: "flex", justifyContent: "flex-end", marginTop: 15 }}>
+                    <Button className={Classes.POPOVER_DISMISS} style={{ marginRight: 10 }}>
+                        Cancel
+                    </Button>
+                    <Button intent={Intent.DANGER}  onClick={clearAllVehicles} className={Classes.POPOVER_DISMISS}>
+                        Delete
+                    </Button>
+                  </div>
+
+                </Card>
+              }
+            >
+              <Button icon="eraser" intent="danger">
+                Clear all
+              </Button>
             </Popover2>
           </ButtonGroup>
         </div>

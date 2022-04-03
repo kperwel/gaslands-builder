@@ -18,6 +18,10 @@ interface RemoveVehicleAction {
   index: number;
 }
 
+interface ClearAllVehiclesAction {
+  type: "clearAllVehicles";
+}
+
 interface UpdateVehicleAction {
   type: "updateVehicle";
   index: number;
@@ -41,7 +45,8 @@ type VehicleAction =
   | UpdateVehicleAction
   | UpdateTeamNameAction
   | UpdateVehicleNameAction
-  | AddRandomVehicleAction;
+  | AddRandomVehicleAction
+  | ClearAllVehiclesAction;
 
 const reducer: React.Reducer<Team, VehicleAction> = (state, action) => {
   switch (action.type) {
@@ -62,6 +67,11 @@ const reducer: React.Reducer<Team, VehicleAction> = (state, action) => {
           ...state.vehicles.slice(0, action.index),
           ...state.vehicles.slice(action.index + 1),
         ],
+      };
+    case "clearAllVehicles":
+      return {
+        ...state,
+        vehicles: [],
       };
     case "updateVehicle":
       return {
