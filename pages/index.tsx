@@ -45,7 +45,7 @@ const App: NextPage = (): React.ReactElement => {
   const { isDark, toggleTheme } = useTheme();
   const [randomCostRange, setRandomCostRange] = React.useState<
     [number, number]
-  >([0, 100]);
+  >([5, 100]);
   const [team, dispatchTeamAction] = useQueryStringReducer(
     reducer,
     INITIAL_TEAM,
@@ -179,7 +179,7 @@ const App: NextPage = (): React.ReactElement => {
               content={
                 <Card>
                   <RangeSlider
-                    min={0}
+                    min={5}
                     max={100}
                     stepSize={1}
                     labelStepSize={20}

@@ -2,10 +2,11 @@ import {
   ActiveVehicle,
   calculateTotalCost,
   calculateBuildSlotsInUse,
+  VehicleType,
 } from "../rules/vehicles";
 import { vehicleTypes } from "../rules/vehicles";
 
-import { randomFromArray } from "./utils";
+import { getRandomThatFitsRequirements, randomFromArray } from "./utils";
 import { generateCarName } from "./names";
 import addRandomUpgradeFittingRequirements from "./upgrade";
 import addRandomWeaponFittingRequirements from "./weapon";
@@ -22,11 +23,26 @@ enum FeatureToAdd {
   Upgrade = "upgrade",
 }
 
+interface VehicleRequirements {
+  maxCost: number;
+}
+
+const checkRequirements = (vehicle: VehicleType, requirements: VehicleRequirements) => vehicle.cost <= requirements.maxCost;
+const getRandomVehicleInRequirements = (requirements: VehicleRequirements) => getRandomThatFitsRequirements(vehicleTypes, requirements, checkRequirements)
+
 const getRandomFeatureTypeToAdd = () =>
   randomFromArray(Object.values(FeatureToAdd));
 
 export default function createRandomCar(value: number = 30): ActiveVehicle {
-  const vehicleType = randomFromArray(vehicleTypes);
+  const vehicleRequirements: VehicleRequirements = {
+    maxCost: value
+  }
+
+  const vehicleType = getRandomVehicleInRequirements(vehicleRequirements);
+
+  if (!vehicleType) {
+    throw new Error("No vehicle found");
+  }
 
   let requirements = {
     maxCost: value,
